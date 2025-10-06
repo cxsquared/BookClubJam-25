@@ -16,6 +16,7 @@
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
     "@pixi/ui": "^2.2.7",
+    "@tweenjs/tween.js": "^25.0.0",
     "@typeonce/ecs": "^0.1.0",
     "pixi.js": "^8.13.2",
     "spacetimedb": "^1.5.0"

@@ -1,5 +1,5 @@
 import { query, queryRequired, System } from "@typeonce/ecs";
-import { Assets, Container, Sprite as PSprite, Rectangle } from "pixi.js";
+import { Container, Sprite as PSprite } from "pixi.js";
 import {
   DecorAdded,
   DecorDeleted,
@@ -13,6 +13,7 @@ import {
   DoorComponent,
   EnergyComponent,
   MouseEvents,
+  OpenDoorController,
   Position,
   PositionLimit,
   Sprite,
@@ -21,6 +22,7 @@ import { DbConnection, Decor, User } from "./module_bindings";
 import { Identity } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { AssetManager } from "./Globals";
+import { Tween } from "@tweenjs/tween.js";
 
 export type SystemTags =
   | "Render"
@@ -30,7 +32,8 @@ export type SystemTags =
   | "MouseInput"
   | "KeyInput"
   | "EnergySystem"
-  | "CursorSystem";
+  | "CursorSystem"
+  | "OpenDoorSystem";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
@@ -70,7 +73,8 @@ export class RenderSystem extends SystemFactory<{}>("Render", {
   execute: ({ world }) => {
     pixiRender(world).forEach(({ sprite, position }) => {
       sprite.sprite.x = position.x;
-      sprite.sprite.y = position.y;
+      sprite.sprite.y = position.y + position.yOffset;
+      sprite.sprite.skew.y = position.skew;
     });
   },
 }) {}
@@ -171,7 +175,12 @@ export class DecorSpawnSystem extends SystemFactory<{
       sprite.eventMode = "dynamic";
 
       const listener = new MouseListener(sprite);
-      const position = new Position({ x: decor.x, y: decor.y });
+      const position = new Position({
+        x: decor.x,
+        y: decor.y,
+        yOffset: 0,
+        skew: 0,
+      });
 
       const id = createEntity();
       addComponent(
@@ -361,12 +370,24 @@ export class KeyInputSystem extends SystemFactory<{
 }>("KeyInput", {
   execute: ({ world, destroyEntity, input: { inputManager, conn } }) => {
     if (inputManager.isKeyPressed("Space")) {
-      conn.reducers.enterDoor();
+      const openDoor = openDoorQuery(world)[0];
+      const door = doorQuery(world)[0];
 
-      for (const decor of decorQuery(world)) {
-        decor.sprite.sprite.removeFromParent();
-        destroyEntity(decor.entityId);
-      }
+      openDoor.openController.isOpen = true;
+
+      openDoor.openController.tween.onComplete(() => {
+        openDoor.openController.tween = new Tween({ yOffset: 0, skew: 0 });
+        door.position.skew = 0;
+        door.position.yOffset = 0;
+        conn.reducers.enterDoor();
+        openDoor.openController.isOpen = false;
+        openDoor.openController.previousState = false;
+
+        for (const decor of decorQuery(world)) {
+          decor.sprite.sprite.removeFromParent();
+          destroyEntity(decor.entityId);
+        }
+      });
     }
 
     inputManager.tick();
@@ -420,5 +441,60 @@ export class EnergySystem extends SystemFactory<{}>("EnergySystem", {
         eb.energyComponent.bar.progress = event.data.newEnergy;
       });
     });
+  },
+}) {}
+
+const openDoorQuery = queryRequired({
+  openController: OpenDoorController,
+});
+
+const openYOffset = 23;
+const openYSkew = -0.1;
+export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
+  execute: ({ world }) => {
+    const { openController } = openDoorQuery(world)[0];
+
+    const door = doorQuery(world)[0];
+    const decorItems = decorQuery(world);
+
+    if (openController.isOpen) {
+      door.position.yOffset = openYOffset;
+      door.position.skew = openYSkew;
+      decorItems.forEach((decor) => {
+        decor.position.yOffset = openYOffset * 0.25;
+        decor.position.skew = openYSkew;
+      });
+    }
+
+    if (
+      openController.isOpen === openController.previousState &&
+      !openController.tween.isPlaying()
+    ) {
+      return;
+    }
+
+    openController.tween.onUpdate((values) => {
+      door.position.yOffset = values.yOffset;
+      door.position.skew = values.skew;
+      decorItems.forEach((decor) => {
+        decor.position.yOffset = values.yOffset * 0.25;
+        decor.position.skew = values.skew;
+      });
+    });
+
+    if (openController.isOpen && !openController.previousState) {
+      openController.tween.to({ yOffset: openYOffset, skew: openYSkew });
+      openController.tween.startFromCurrentValues();
+    } else if (!openController.isOpen && openController.previousState) {
+      openController.tween.to({ yOffset: 0, skew: 0 });
+      openController.tween.startFromCurrentValues();
+    }
+
+    if (!openController.tween.isPlaying()) {
+      openController.tween.start();
+    }
+    openController.tween.update();
+
+    openController.previousState = openController.isOpen;
   },
 }) {}

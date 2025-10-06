@@ -1,11 +1,5 @@
 import { ECS, World } from "@typeonce/ecs";
-import {
-  Application,
-  Assets,
-  Container,
-  Graphics,
-  Sprite as PSprite,
-} from "pixi.js";
+import { Application, Container, Graphics, Sprite as PSprite } from "pixi.js";
 import {
   CursorSystem,
   DecorSpawnSystem,
@@ -13,6 +7,7 @@ import {
   KeyInputSystem,
   MouseInput,
   MouseListener,
+  OpenDoor,
   PositionLimiter,
   RenderSystem,
   SpacetimeDBEventSystem,
@@ -25,6 +20,7 @@ import {
   DoorComponent,
   EnergyComponent,
   MouseEvents,
+  OpenDoorController,
   Position,
   Sprite,
 } from "./components";
@@ -32,14 +28,9 @@ import { DbConnection, ErrorContext } from "./module_bindings";
 import { Identity } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { ProgressBar } from "@pixi/ui";
-import {
-  APP_WIDTH,
-  APP_HEIGHT,
-  DECOR_KEYS,
-  randomDecorKey,
-  AssetManager,
-} from "./Globals";
+import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
 import { initDevtools } from "@pixi/devtools";
+import { Tween } from "@tweenjs/tween.js";
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = "ws://localhost:3000";
@@ -118,8 +109,9 @@ const spacedbUri = "ws://localhost:3000";
       fill,
       progress: 0,
     });
-    progressBar.x = APP_WIDTH / 2 - progressBar.width / 2;
-    progressBar.y = APP_HEIGHT - progressBar.height - 2;
+    progressBar.x = APP_WIDTH - progressBar.height - 25;
+    progressBar.y = 520;
+    progressBar.rotation = -Math.PI / 2;
 
     container.addChild(progressBar);
     world = ECS.create<SystemTags, GameEventMap>(
@@ -134,17 +126,27 @@ const spacedbUri = "ws://localhost:3000";
 
         addComponent(
           createEntity(),
+          new OpenDoorController({
+            isOpen: false,
+            previousState: false,
+            tweenTime: 0,
+            tween: new Tween({ yOffset: 0, skew: 0 }),
+          })
+        );
+
+        addComponent(
+          createEntity(),
           new Cursor({
             dragging: undefined,
             listener: new MouseListener(door, true),
           }),
-          new Position({ x: 0, y: 0 })
+          new Position({ x: 0, y: 0, yOffset: 0, skew: 0 })
         );
 
         addComponent(createEntity(), new EnergyComponent({ bar: progressBar }));
         addComponent(
           createEntity(),
-          new Position({ x: door.x, y: door.y }),
+          new Position({ x: door.x, y: door.y, yOffset: 0, skew: 0 }),
           new Sprite({ sprite: door }),
           new DoorComponent(),
           new MouseEvents({
@@ -165,6 +167,7 @@ const spacedbUri = "ws://localhost:3000";
           new EnergySystem(),
           new CursorSystem({ conn }),
           new PositionLimiter(),
+          new OpenDoor(),
           new RenderSystem()
         );
       }

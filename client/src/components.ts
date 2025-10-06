@@ -3,10 +3,13 @@ import { Sprite as _Sprite } from "pixi.js";
 import { Decor } from "./module_bindings";
 import { MouseListener } from "./systems";
 import { ProgressBar } from "@pixi/ui";
+import { Tween } from "@tweenjs/tween.js";
 
 export class Position extends Component("Position")<{
   x: number;
   y: number;
+  yOffset: number;
+  skew: number;
 }> {}
 
 export class PositionLimit extends Component("PositionLimit")<{
@@ -39,4 +42,10 @@ export class EnergyComponent extends Component("EnergyComponent")<{
 export class Cursor extends Component("Cursor")<{
   dragging: EntityId | undefined;
   listener: MouseListener;
+}> {}
+
+export class OpenDoorController extends Component("OpenDoorController")<{
+  isOpen: boolean;
+  previousState: boolean;
+  tween: Tween;
 }> {}
