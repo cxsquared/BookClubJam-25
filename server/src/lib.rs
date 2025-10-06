@@ -113,6 +113,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
             .filter(user.identity)
             .map(|v| return v.door_id),
     );
+    let visited_count = visited.iter().count();
     let found_door: Door;
 
     // find a new door that isn't theirs and doesn't have a visitor
@@ -147,7 +148,8 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
 
     log::debug!("Giving energy to user");
     ctx.db.user().identity().update(User {
-        energy: cmp::min(ENERGY_MAX, user.energy + 50),
+        energy: (user.energy + cmp::min(5, 50 - ((visited_count as u32) * 2)))
+            .clamp(ENERGY_MIN, ENERGY_MAX),
         ..user
     });
 
@@ -159,7 +161,7 @@ pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result
     let user = get_user(ctx)?;
     let energy_needed = CREATE_ENERGY;
 
-    check_has_enough_energy(&user, energy_needed)?;
+    let _ = check_has_enough_energy(&user, energy_needed);
 
     let door = ctx
         .db
@@ -183,7 +185,7 @@ pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result
     });
 
     ctx.db.user().identity().update(User {
-        energy: user.energy - energy_needed,
+        energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
         ..user
     });
 
@@ -205,15 +207,23 @@ pub fn move_decor(
         .id()
         .find(decor_id)
         .expect("Decor does not exist");
+
     let energy_needed = MODIFY_ENERGY;
 
     if decor.owner != user.identity {
-        check_has_enough_energy(&user, energy_needed)?;
+        let _ = check_has_enough_energy(&user, energy_needed);
 
         ctx.db.user().identity().update(User {
-            energy: user.energy - energy_needed,
+            energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
             ..user
         });
+
+        if let Some(owner) = ctx.db.user().identity().find(decor.owner) {
+            ctx.db.user().identity().update(User {
+                energy: (owner.energy + energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
+                ..owner
+            });
+        }
     }
 
     ctx.db.decor().id().update(Decor {
@@ -243,12 +253,12 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         DELETE_OTHER_ENERGY
     };
 
-    check_has_enough_energy(&user, energy_needed)?;
+    let _ = check_has_enough_energy(&user, energy_needed);
 
     ctx.db.decor().delete(decor);
 
     ctx.db.user().identity().update(User {
-        energy: user.energy - energy_needed,
+        energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
         ..user
     });
 
@@ -293,7 +303,7 @@ pub fn like_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         });
 
         ctx.db.user().identity().update(User {
-            energy: cmp::min(ENERGY_MAX, receiving_user.energy + LIKE_DECOR_ENERGY_GAIN),
+            energy: (receiving_user.energy + LIKE_DECOR_ENERGY_GAIN).clamp(ENERGY_MIN, ENERGY_MAX),
             ..receiving_user
         });
     } else {

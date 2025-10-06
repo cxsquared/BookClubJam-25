@@ -1,5 +1,5 @@
 import { query, queryRequired, System } from "@typeonce/ecs";
-import { Container, Sprite as PSprite, Texture } from "pixi.js";
+import { Assets, Container, Sprite as PSprite, Rectangle } from "pixi.js";
 import {
   DecorAdded,
   DecorDeleted,
@@ -10,25 +10,37 @@ import {
 import {
   Cursor,
   DecorComponent,
+  DoorComponent,
+  EnergyComponent,
   MouseEvents,
   Position,
+  PositionLimit,
   Sprite,
 } from "./components";
 import { DbConnection, Decor, User } from "./module_bindings";
 import { Identity } from "spacetimedb";
 import { InputManager } from "./input_manager";
+import { AssetManager } from "./Globals";
 
 export type SystemTags =
   | "Render"
+  | "PositionLimit"
   | "DecorSpawn"
   | "SpacetimeDBEventSystem"
   | "MouseInput"
   | "KeyInput"
+  | "EnergySystem"
   | "CursorSystem";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
 const pixiRender = query({
+  position: Position,
+  sprite: Sprite,
+});
+
+const doorQuery = queryRequired({
+  door: DoorComponent,
   position: Position,
   sprite: Sprite,
 });
@@ -48,6 +60,12 @@ const mouseListenerQuery = query({
   mouseEvents: MouseEvents,
 });
 
+const positionLimitQuery = query({
+  limit: PositionLimit,
+  position: Position,
+  sprite: Sprite,
+});
+
 export class RenderSystem extends SystemFactory<{}>("Render", {
   execute: ({ world }) => {
     pixiRender(world).forEach(({ sprite, position }) => {
@@ -57,18 +75,41 @@ export class RenderSystem extends SystemFactory<{}>("Render", {
   },
 }) {}
 
+export class PositionLimiter extends SystemFactory<{}>("PositionLimit", {
+  execute: ({ world }) => {
+    positionLimitQuery(world).forEach(({ sprite, position, limit }) => {
+      const width = sprite.sprite.width;
+      const height = sprite.sprite.height;
+      const centerX = width / 2 + position.x;
+      const centerY = height / 2 + position.y;
+
+      if (centerX < limit.x) position.x = limit.x + width;
+
+      if (centerX > limit.x + limit.width)
+        position.x = limit.x + limit.width - width;
+
+      if (centerY < limit.y) position.y = limit.y + height;
+
+      if (centerY > limit.y + limit.height)
+        position.y = limit.y + limit.height - height;
+    });
+  },
+}) {}
+
 export class MouseListener {
   public isMouseJustDown: boolean = false;
   public isMouseDown: boolean = false;
   public isMouseUp: boolean = false;
   public isMouseJustUp: boolean = false;
+  public justEntered: boolean = false;
   public mouseX: number = 0;
   public mouseY: number = 0;
   public sprite: Container;
 
-  constructor(sprite: Container) {
+  constructor(sprite: Container, global: boolean = false) {
     this.sprite = sprite;
-    sprite.addListener("pointerdown", (e) => {
+    const downEvent = global ? "globalpointerdown" : "pointerdown";
+    sprite.on(downEvent, (e) => {
       this.isMouseUp = false;
       this.isMouseJustUp = false;
       this.isMouseDown = true;
@@ -77,7 +118,8 @@ export class MouseListener {
       this.mouseY = e.y;
     });
 
-    sprite.addListener("pointerup", (e) => {
+    const upEvent = global ? "globalpointerup" : "pointerup";
+    sprite.on(upEvent, (e) => {
       this.isMouseDown = false;
       this.isMouseJustDown = false;
       this.isMouseUp = true;
@@ -85,9 +127,9 @@ export class MouseListener {
       this.mouseY = e.y;
     });
 
-    sprite.addListener("pointermove", (e) => {
-      this.mouseX = e.x;
-      this.mouseY = e.y;
+    sprite.on("globalpointermove", (e) => {
+      this.mouseX = e.screenX;
+      this.mouseY = e.screenY;
     });
   }
 
@@ -115,19 +157,15 @@ export class MouseInput extends SystemFactory<{}>("MouseInput", {
 export class DecorSpawnSystem extends SystemFactory<{
   readonly ctx: Container;
 }>("DecorSpawn", {
-  execute: ({
-    world,
-    poll,
-    createEntity,
-    addComponent,
-    addSystem,
-    input: { ctx },
-  }) => {
+  execute: ({ world, poll, createEntity, addComponent, input: { ctx } }) => {
+    const { position: doorPosition, sprite: doorSprite } = doorQuery(world)[0];
+
     poll(DecorAdded).forEach((event) => {
       const decor = event.data.decor;
-      const sprite = new PSprite(Texture.WHITE);
-      sprite.width = 32;
-      sprite.height = 32;
+      const sprite = new PSprite(AssetManager.Assets[event.data.decor.key]);
+      sprite.label = `decor:${decor.id}:${decor.key}`;
+      sprite.x = decor.x;
+      sprite.y = decor.y;
       sprite.anchor.set(0.5, 0.5);
       ctx.addChild(sprite);
       sprite.eventMode = "dynamic";
@@ -141,11 +179,19 @@ export class DecorSpawnSystem extends SystemFactory<{
         position,
         new Sprite({ sprite }),
         new DecorComponent({ decor, inputListener: listener }),
+        new PositionLimit({
+          x: doorPosition.x,
+          y: doorPosition.y,
+          width: doorSprite.sprite.width,
+          height: doorSprite.sprite.height,
+        }),
         new MouseEvents({
           listener,
           onClick: (x, y) => {
             const cursor = cursorQuery(world)[0].cursor;
             cursor.dragging = id;
+            position.x = x;
+            position.y = y;
           },
         })
       );
@@ -233,6 +279,10 @@ export class SpacetimeDBListener {
       }
 
       this.decorSub = newSubscription;
+    });
+
+    conn.db.user.onInsert((_ctx, row) => {
+      this.userUpdated.push(row);
     });
 
     conn.db.user.onUpdate((_ctx, _oldRow, newRow) => {
@@ -324,14 +374,13 @@ export class KeyInputSystem extends SystemFactory<{
 }) {}
 
 export class CursorSystem extends SystemFactory<{
-  listener: MouseListener;
   conn: DbConnection;
 }>("CursorSystem", {
-  execute: ({ getComponent, world, input: { listener, conn } }) => {
+  execute: ({ getComponent, world, input: { conn } }) => {
     const cursorEntity = cursorQuery(world)[0];
 
-    cursorEntity.position.x = listener.mouseX;
-    cursorEntity.position.y = listener.mouseY;
+    cursorEntity.position.x = cursorEntity.cursor.listener.mouseX;
+    cursorEntity.position.y = cursorEntity.cursor.listener.mouseY;
 
     if (cursorEntity.cursor.dragging) {
       const decorEntity = getComponent({
@@ -339,8 +388,8 @@ export class CursorSystem extends SystemFactory<{
         position: Position,
       })(cursorEntity.cursor.dragging);
       if (decorEntity) {
-        decorEntity.position.x = listener.mouseX;
-        decorEntity.position.y = listener.mouseY;
+        decorEntity.position.x = cursorEntity.cursor.listener.mouseX;
+        decorEntity.position.y = cursorEntity.cursor.listener.mouseY;
 
         if (
           decorEntity.decor.inputListener.isMouseJustUp ||
@@ -349,12 +398,27 @@ export class CursorSystem extends SystemFactory<{
           cursorEntity.cursor.dragging = undefined;
           conn.reducers.moveDecor(
             decorEntity.decor.decor.id,
-            listener.mouseX,
-            listener.mouseY,
+            cursorEntity.cursor.listener.mouseX,
+            cursorEntity.cursor.listener.mouseY,
             0
           );
         }
       }
     }
+  },
+}) {}
+
+const energyBarQuery = query({
+  energyComponent: EnergyComponent,
+});
+
+export class EnergySystem extends SystemFactory<{}>("EnergySystem", {
+  execute: ({ poll, world }) => {
+    const energyBars = energyBarQuery(world);
+    poll(UserEnergyChanged).forEach((event) => {
+      energyBars.forEach((eb) => {
+        eb.energyComponent.bar.progress = event.data.newEnergy;
+      });
+    });
   },
 }) {}

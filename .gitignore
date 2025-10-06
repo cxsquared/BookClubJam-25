@@ -240,3 +240,5 @@ new.json
 # Keys
 *.pem
 .ok.sql
+
+client/public
