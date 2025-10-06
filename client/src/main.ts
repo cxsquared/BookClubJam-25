@@ -7,6 +7,7 @@ import {
   Texture,
 } from "pixi.js";
 import {
+  CursorSystem,
   DecorSpawnSystem,
   KeyInputSystem,
   MouseInput,
@@ -17,7 +18,7 @@ import {
   SystemTags,
 } from "./systems";
 import { GameEventMap } from "./events";
-import { Position, Sprite } from "./components";
+import { Cursor, MouseEvents, Position, Sprite } from "./components";
 import { DbConnection, ErrorContext } from "./module_bindings";
 import { Identity } from "spacetimedb";
 import { InputManager } from "./input_manager";
@@ -52,28 +53,44 @@ import { InputManager } from "./input_manager";
     );
 
     const listener = new SpacetimeDBListener(conn, identity);
-    const mListener = new MouseListener(container);
 
     world = ECS.create<SystemTags, GameEventMap>(
       ({ addComponent, createEntity, addSystem }) => {
-        addSystem(
-          new KeyInputSystem({ inputManager: new InputManager(), conn })
-        );
-        addSystem(new MouseInput({ listener: mListener, conn }));
-        addSystem(new SpacetimeDBEventSystem({ listener }));
-        addSystem(new DecorSpawnSystem({ ctx: container }));
-        addSystem(new RenderSystem());
+        const door = new PSprite(texture);
+        door.width = 800 / 3;
+        door.height = 600 - 100;
+        door.anchor.set(0.5, 0.5);
+        door.eventMode = "dynamic";
+        door.interactiveChildren = true;
+        door.interactive = true;
+        container.addChild(door);
 
-        const player = new PSprite(texture);
-        player.width = 800 / 3;
-        player.height = 600 - 100;
-        player.anchor.set(0.5, 0.5);
-        container.addChild(player);
+        const mListener = new MouseListener(door);
+        addComponent(
+          createEntity(),
+          new Cursor({ dragging: undefined }),
+          new Position({ x: 0, y: 0 }),
+          new MouseEvents({
+            listener: mListener,
+            onClick: (x, y) => {
+              conn.reducers.createDecor("test", x, y);
+            },
+          })
+        );
+
+        addSystem(
+          new MouseInput(),
+          new KeyInputSystem({ inputManager: new InputManager(), conn }),
+          new SpacetimeDBEventSystem({ listener }),
+          new DecorSpawnSystem({ ctx: container }),
+          new CursorSystem({ listener: mListener, conn }),
+          new RenderSystem()
+        );
 
         addComponent(
           createEntity(),
           new Position({ x: 800 / 2, y: 600 / 2 }),
-          new Sprite({ sprite: player })
+          new Sprite({ sprite: door })
         );
       }
     );

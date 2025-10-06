@@ -207,7 +207,14 @@ pub fn move_decor(
         .expect("Decor does not exist");
     let energy_needed = MODIFY_ENERGY;
 
-    check_has_enough_energy(&user, energy_needed)?;
+    if decor.owner != user.identity {
+        check_has_enough_energy(&user, energy_needed)?;
+
+        ctx.db.user().identity().update(User {
+            energy: user.energy - energy_needed,
+            ..user
+        });
+    }
 
     ctx.db.decor().id().update(Decor {
         last_modifier: user.identity,
@@ -215,11 +222,6 @@ pub fn move_decor(
         y,
         rot,
         ..decor
-    });
-
-    ctx.db.user().identity().update(User {
-        energy: user.energy - energy_needed,
-        ..user
     });
 
     Ok(())
