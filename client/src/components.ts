@@ -27,6 +27,7 @@ export class DecorComponent extends Component("Decor")<{
   decor: Decor;
   inputListener: MouseListener;
   originalPosition: Position;
+  deleteSprite: _Sprite;
 }> {}
 
 export class DoorComponent extends Component("Door")<{}> {}

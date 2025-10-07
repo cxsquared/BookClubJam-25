@@ -1,5 +1,11 @@
 import { EventMap } from "@typeonce/ecs";
-import { Decor, Door, MoveDecor, Reducer } from "./module_bindings";
+import {
+  Decor,
+  DeleteDecor,
+  Door,
+  MoveDecor,
+  Reducer,
+} from "./module_bindings";
 import { ReducerEvent } from "spacetimedb";
 
 export const DecorAdded = Symbol("DecorAdded");
@@ -9,6 +15,8 @@ export const UserEnergyChanged = Symbol("UserEnergyChanged");
 export const ChangeDoor = Symbol("ChangeDoor");
 export const MoveDecorFailed = Symbol("MoveDecorFailed");
 export const MoveDecorSucceeded = Symbol("MoveDecorSucceeded");
+export const DeleteDecorSucceeded = Symbol("MoveDecorSucceeded");
+export const DeleteDecorFailed = Symbol("DeleteDecorFailed");
 
 export interface GameEventMap extends EventMap {
   [DecorAdded]: { decor: Decor };
@@ -19,6 +27,12 @@ export interface GameEventMap extends EventMap {
   };
   [MoveDecorSucceeded]: {
     event: ReducerEvent<{ name: "MoveDecor"; args: MoveDecor }>;
+  };
+  [DeleteDecorSucceeded]: {
+    event: ReducerEvent<{ name: "DeleteDecor"; args: DeleteDecor }>;
+  };
+  [DeleteDecorFailed]: {
+    event: ReducerEvent<{ name: "DeleteDecor"; args: DeleteDecor }>;
   };
   [UserEnergyChanged]: { newEnergy: number };
   [ChangeDoor]: { newDoor: Door };

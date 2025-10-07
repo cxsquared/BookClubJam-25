@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1759782225765,
-                "duration": 2.2612999999983003,
+                "date": 1759796115126,
+                "duration": 2.139299999922514,
                 "success": true
             }
         },
@@ -1078,6 +1078,159 @@
         "C:/dev/spacetimedb/bookclubjam-25/client/public/star_01-WW5npw@0.5x.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/cache-buster/star_01-WW5npw@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/assets/delete.png": {
+            "isFolder": false,
+            "parent": "C:/dev/spacetimedb/bookclubjam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759796115127,
+                "duration": 34.01200000010431,
+                "success": true
+            },
+            "hash": "uv5_zA"
+        },
+        ".assetpack/mipmap/delete.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-8yokZA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-8yokZA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-8yokZA.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-gJt8pw.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-gJt8pw.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-gJt8pw.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-R2NS8A.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-R2NS8A.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-R2NS8A.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/delete@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/delete.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-ME1tvw@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-ME1tvw@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-ME1tvw@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-f8W9Bw@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-f8W9Bw@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-f8W9Bw@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/delete@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/delete@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/delete-PxxSog@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/delete@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/delete-PxxSog@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/delete-PxxSog@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}

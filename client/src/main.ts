@@ -2,7 +2,7 @@ import { ECS, World } from "@typeonce/ecs";
 import { Application, Container, Graphics, Sprite as PSprite } from "pixi.js";
 import {
   CursorSystem,
-  DecorMoveEventSystem,
+  DecorEventSystem,
   DecorSpawnSystem,
   EnergySystem,
   KeyInputSystem,
@@ -138,7 +138,7 @@ const spacedbUri = "ws://localhost:3000";
           createEntity(),
           new Cursor({
             dragging: undefined,
-            listener: new MouseListener(door, true),
+            listener: new MouseListener(door),
           }),
           new Position({ x: 0, y: 0, yOffset: 0, skew: 0 })
         );
@@ -163,10 +163,10 @@ const spacedbUri = "ws://localhost:3000";
           new MouseInput(),
           new KeyInputSystem({ inputManager: new InputManager(), conn }),
           new SpacetimeDBEventSystem({ listener }),
-          new DecorSpawnSystem({ ctx: container }),
+          new DecorSpawnSystem({ ctx: container, conn }),
           new EnergySystem(),
           new CursorSystem({ conn }),
-          new DecorMoveEventSystem(),
+          new DecorEventSystem(),
           new PositionLimiter(),
           new OpenDoor(),
           new RenderSystem()

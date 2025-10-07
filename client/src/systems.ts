@@ -1,9 +1,11 @@
 import { query, queryRequired, System } from "@typeonce/ecs";
-import { Container, Sprite as PSprite } from "pixi.js";
+import { Container, Sprite as PSprite, Rectangle } from "pixi.js";
 import {
   DecorAdded,
   DecorDeleted,
   DecorUpdated,
+  DeleteDecorFailed,
+  DeleteDecorSucceeded,
   GameEventMap,
   MoveDecorFailed,
   MoveDecorSucceeded,
@@ -20,7 +22,13 @@ import {
   PositionLimit,
   Sprite,
 } from "./components";
-import { DbConnection, Decor, MoveDecor, User } from "./module_bindings";
+import {
+  DbConnection,
+  Decor,
+  DeleteDecor,
+  MoveDecor,
+  User,
+} from "./module_bindings";
 import { Identity, ReducerEvent } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { AssetManager } from "./Globals";
@@ -36,7 +44,7 @@ export type SystemTags =
   | "EnergySystem"
   | "CursorSystem"
   | "OpenDoorSystem"
-  | "DecorMoveEventSystem";
+  | "DecorEventSystem";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
@@ -103,34 +111,52 @@ export class PositionLimiter extends SystemFactory<{}>("PositionLimit", {
   },
 }) {}
 
-export class DecorMoveEventSystem extends SystemFactory<{}>(
-  "DecorMoveEventSystem",
-  {
-    execute: ({ world, poll }) => {
-      poll(MoveDecorFailed).forEach(({ data }) => {
-        const decor = decorQuery(world).find(
-          (d) => d.decor.decor.id === data.event.reducer.args.decorId
-        );
+export class DecorEventSystem extends SystemFactory<{}>("DecorEventSystem", {
+  execute: ({ world, poll, destroyEntity }) => {
+    poll(MoveDecorFailed).forEach(({ data }) => {
+      const decor = decorQuery(world).find(
+        (d) => d.decor.decor.id === data.event.reducer.args.decorId
+      );
 
-        if (decor) {
-          decor.position.x = decor.decor.originalPosition.x;
-          decor.position.y = decor.decor.originalPosition.y;
-        }
-      });
+      if (decor) {
+        decor.position.x = decor.decor.originalPosition.x;
+        decor.position.y = decor.decor.originalPosition.y;
+      }
+    });
 
-      poll(MoveDecorSucceeded).forEach(({ data }) => {
-        const decor = decorQuery(world).find(
-          (d) => d.decor.decor.id === data.event.reducer.args.decorId
-        );
+    poll(MoveDecorSucceeded).forEach(({ data }) => {
+      const decor = decorQuery(world).find(
+        (d) => d.decor.decor.id === data.event.reducer.args.decorId
+      );
 
-        if (decor) {
-          decor.decor.originalPosition.x = decor.position.x;
-          decor.decor.originalPosition.y = decor.position.y;
-        }
-      });
-    },
-  }
-) {}
+      if (decor) {
+        decor.decor.originalPosition.x = decor.position.x;
+        decor.decor.originalPosition.y = decor.position.y;
+      }
+    });
+
+    poll(DeleteDecorFailed).forEach(({ data }) => {
+      const decor = decorQuery(world).find(
+        (d) => d.decor.decor.id === data.event.reducer.args.decorId
+      );
+
+      if (decor) {
+        decor.sprite.sprite.interactive = true;
+      }
+    });
+
+    poll(DeleteDecorSucceeded).forEach(({ data }) => {
+      const decor = decorQuery(world).find(
+        (d) => d.decor.decor.id === data.event.reducer.args.decorId
+      );
+
+      if (decor) {
+        decor.sprite.sprite.removeFromParent();
+        destroyEntity(decor.entityId);
+      }
+    });
+  },
+}) {}
 
 export class MouseListener {
   public isMouseJustDown: boolean = false;
@@ -142,9 +168,9 @@ export class MouseListener {
   public mouseY: number = 0;
   public sprite: Container;
 
-  constructor(sprite: Container, global: boolean = false) {
+  constructor(sprite: Container) {
     this.sprite = sprite;
-    const downEvent = global ? "globalpointerdown" : "pointerdown";
+    const downEvent = "pointerdown";
     sprite.on(downEvent, (e) => {
       this.isMouseUp = false;
       this.isMouseJustUp = false;
@@ -154,7 +180,7 @@ export class MouseListener {
       this.mouseY = e.y;
     });
 
-    const upEvent = global ? "globalpointerup" : "pointerup";
+    const upEvent = "pointerup";
     sprite.on(upEvent, (e) => {
       this.isMouseDown = false;
       this.isMouseJustDown = false;
@@ -192,8 +218,15 @@ export class MouseInput extends SystemFactory<{}>("MouseInput", {
 
 export class DecorSpawnSystem extends SystemFactory<{
   readonly ctx: Container;
+  readonly conn: DbConnection;
 }>("DecorSpawn", {
-  execute: ({ world, poll, createEntity, addComponent, input: { ctx } }) => {
+  execute: ({
+    world,
+    poll,
+    createEntity,
+    addComponent,
+    input: { ctx, conn },
+  }) => {
     const { position: doorPosition, sprite: doorSprite } = doorQuery(world)[0];
 
     poll(DecorAdded).forEach((event) => {
@@ -202,9 +235,10 @@ export class DecorSpawnSystem extends SystemFactory<{
       sprite.label = `decor:${decor.id}:${decor.key}`;
       sprite.x = decor.x;
       sprite.y = decor.y;
+      sprite.cursor = "pointer";
       sprite.anchor.set(0.5, 0.5);
       ctx.addChild(sprite);
-      sprite.eventMode = "dynamic";
+      sprite.eventMode = "static";
 
       const listener = new MouseListener(sprite);
       const position = new Position({
@@ -214,7 +248,38 @@ export class DecorSpawnSystem extends SystemFactory<{
         skew: 0,
       });
 
+      const cursor = cursorQuery(world)[0].cursor;
+
+      const deleteSprite = new PSprite(AssetManager.Assets.delete);
+      deleteSprite.visible = false;
+      deleteSprite.x = sprite.width / 2 - 2;
+      deleteSprite.y = -sprite.height / 2 - 6;
+      deleteSprite.hitArea = new Rectangle(
+        0,
+        0,
+        deleteSprite.width,
+        deleteSprite.height
+      );
+      deleteSprite.eventMode = "static";
+      deleteSprite.on("pointerdown", (e) => {
+        conn.reducers.deleteDecor(decor.id);
+        e.stopPropagation();
+      });
+
+      sprite.addChild(deleteSprite);
+
       const id = createEntity();
+
+      sprite.on("pointerenter", () => {
+        if (!cursor.dragging) {
+          deleteSprite.visible = true;
+        }
+      });
+
+      sprite.on("pointerleave", () => {
+        deleteSprite.visible = false;
+      });
+
       const decorComp = new DecorComponent({
         decor,
         inputListener: listener,
@@ -224,6 +289,7 @@ export class DecorSpawnSystem extends SystemFactory<{
           yOffset: 0,
           skew: 0,
         }),
+        deleteSprite,
       });
       addComponent(
         id,
@@ -239,11 +305,12 @@ export class DecorSpawnSystem extends SystemFactory<{
         new MouseEvents({
           listener,
           onClick: (x, y) => {
-            const cursor = cursorQuery(world)[0].cursor;
             cursor.dragging = id;
 
             position.x = x;
             position.y = y;
+
+            deleteSprite.visible = false;
           },
         })
       );
@@ -262,6 +329,11 @@ export class SpacetimeDBListener {
     args: MoveDecor;
   }>[];
 
+  public readonly deleteDecorEvent: ReducerEvent<{
+    name: "DeleteDecor";
+    args: DeleteDecor;
+  }>[];
+
   public currentDoorId: BigInt = BigInt(0);
   public userSub;
   public doorSub;
@@ -273,6 +345,7 @@ export class SpacetimeDBListener {
     this.decorUpdated = [];
     this.userUpdated = [];
     this.moveDecorEvent = [];
+    this.deleteDecorEvent = [];
 
     console.log("building listeners");
 
@@ -281,6 +354,15 @@ export class SpacetimeDBListener {
         ctx.event as ReducerEvent<{
           name: "MoveDecor";
           args: MoveDecor;
+        }>
+      );
+    });
+
+    conn.reducers.onDeleteDecor((ctx) => {
+      this.deleteDecorEvent.push(
+        ctx.event as ReducerEvent<{
+          name: "DeleteDecor";
+          args: DeleteDecor;
         }>
       );
     });
@@ -435,6 +517,22 @@ export class SpacetimeDBEventSystem extends SystemFactory<{
         });
       }
       failedMoveDecor = listener.moveDecorEvent.shift();
+    }
+
+    let failedDeleteDecor = listener.deleteDecorEvent.shift();
+    while (failedDeleteDecor) {
+      if (failedDeleteDecor.status.tag === "Failed") {
+        emit({
+          type: DeleteDecorFailed,
+          data: { event: failedDeleteDecor },
+        });
+      } else if (failedDeleteDecor.status.tag === "Committed") {
+        emit({
+          type: DeleteDecorSucceeded,
+          data: { event: failedDeleteDecor },
+        });
+      }
+      failedDeleteDecor = listener.deleteDecorEvent.shift();
     }
   },
 }) {}
