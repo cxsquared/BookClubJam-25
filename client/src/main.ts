@@ -48,6 +48,8 @@ globalThis.editingText = false;
     width: APP_WIDTH,
     height: APP_HEIGHT,
     backgroundColor: 0x222222,
+    antialias: false,
+    resolution: window.devicePixelRatio,
   });
   document.body.appendChild(app.canvas);
 

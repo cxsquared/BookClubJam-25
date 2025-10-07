@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1759856971656,
-                "duration": 0.2734999998938292,
+                "date": 1759879386953,
+                "duration": 0.3620999999111518,
                 "success": true
             }
         },
@@ -936,11 +936,11 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1759856971656,
-                "duration": 14.970800000010058,
+                "date": 1759878628764,
+                "duration": 17.855699999985518,
                 "success": true
             },
-            "hash": "QOkmxw"
+            "hash": "a77bMQ"
         },
         ".assetpack/mipmap/hanger_01.png": {
             "isFolder": false,
@@ -956,16 +956,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-Z2C0WQ.png": {
+        ".assetpack/cache-buster/hanger_01-bW8Lrg.png": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01.png",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-Z2C0WQ.png": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-bW8Lrg.png": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-Z2C0WQ.png",
+            "transformParent": ".assetpack/cache-buster/hanger_01-bW8Lrg.png",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -977,16 +977,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-SlH7lg.webp": {
+        ".assetpack/cache-buster/hanger_01-M4EFiA.webp": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01.webp",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-SlH7lg.webp": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-M4EFiA.webp": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-SlH7lg.webp",
+            "transformParent": ".assetpack/cache-buster/hanger_01-M4EFiA.webp",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -998,16 +998,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-2nIdTQ.avif": {
+        ".assetpack/cache-buster/hanger_01-lmB_dg.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-2nIdTQ.avif": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-lmB_dg.avif": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-2nIdTQ.avif",
+            "transformParent": ".assetpack/cache-buster/hanger_01-lmB_dg.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -1026,16 +1026,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-pjx5Bg@0.5x.png": {
+        ".assetpack/cache-buster/hanger_01-TEZ85A@0.5x.png": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01@0.5x.png",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-pjx5Bg@0.5x.png": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-TEZ85A@0.5x.png": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-pjx5Bg@0.5x.png",
+            "transformParent": ".assetpack/cache-buster/hanger_01-TEZ85A@0.5x.png",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -1047,16 +1047,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-5UQ1MA@0.5x.webp": {
+        ".assetpack/cache-buster/hanger_01-s3JKtA@0.5x.webp": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01@0.5x.webp",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-5UQ1MA@0.5x.webp": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-s3JKtA@0.5x.webp": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-5UQ1MA@0.5x.webp",
+            "transformParent": ".assetpack/cache-buster/hanger_01-s3JKtA@0.5x.webp",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -1068,16 +1068,16 @@
             "inheritedMetaData": {},
             "transformData": {}
         },
-        ".assetpack/cache-buster/hanger_01-YdIfXA@0.5x.avif": {
+        ".assetpack/cache-buster/hanger_01-uJxiCg@0.5x.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/hanger_01@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
         },
-        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-YdIfXA@0.5x.avif": {
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/hanger_01-uJxiCg@0.5x.avif": {
             "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/hanger_01-YdIfXA@0.5x.avif",
+            "transformParent": ".assetpack/cache-buster/hanger_01-uJxiCg@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -1537,6 +1537,771 @@
         "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/star_01-WW5npw@0.5x.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/cache-buster/star_01-WW5npw@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/cat_01.png": {
+            "isFolder": false,
+            "parent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759878810565,
+                "duration": 13.195999999996275,
+                "success": true
+            },
+            "hash": "m7oy"
+        },
+        ".assetpack/mipmap/cat_01.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-lI-X.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-lI-X.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-lI-X.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-6FHIGQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-6FHIGQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-6FHIGQ.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-fCPscw.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-fCPscw.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-fCPscw.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/cat_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/cat_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-fHATZg@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-fHATZg@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-fHATZg@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-P93YbA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-P93YbA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-P93YbA@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/cat_01@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/cat_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/cat_01-OdiBbw@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/cat_01@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/cat_01-OdiBbw@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/cat_01-OdiBbw@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/face_01.png": {
+            "isFolder": false,
+            "parent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759878878736,
+                "duration": 11.521300000022165,
+                "success": true
+            },
+            "hash": "xGk56w"
+        },
+        ".assetpack/mipmap/face_01.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-r8eSkA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-r8eSkA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-r8eSkA.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-21P07w.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-21P07w.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-21P07w.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-4x9k7A.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-4x9k7A.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-4x9k7A.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/face_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/face_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-SABVfw@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-SABVfw@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-SABVfw@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-FLlKIg@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-FLlKIg@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-FLlKIg@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/face_01@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/face_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/face_01-xnzRXg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/face_01@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/face_01-xnzRXg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/face_01-xnzRXg@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/leaf_01.png": {
+            "isFolder": false,
+            "parent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759878974530,
+                "duration": 20.76300000003539,
+                "success": true
+            },
+            "hash": "WpgbEw"
+        },
+        ".assetpack/mipmap/leaf_01.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-IzdMVw.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-IzdMVw.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-IzdMVw.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-j2bEBg.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-j2bEBg.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-j2bEBg.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-3OPDnA.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-3OPDnA.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-3OPDnA.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/leaf_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/leaf_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-XI_G9w@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-XI_G9w@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-XI_G9w@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-n79eqw@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-n79eqw@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-n79eqw@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/leaf_01@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/leaf_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/leaf_01-bqU2iA@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/leaf_01@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/leaf_01-bqU2iA@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/leaf_01-bqU2iA@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/rainbow_01.png": {
+            "isFolder": false,
+            "parent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759879280984,
+                "duration": 32.05749999999534,
+                "success": true
+            },
+            "hash": "4PuwgA"
+        },
+        ".assetpack/mipmap/rainbow_01.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-GYJxew.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-GYJxew.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-GYJxew.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-Yi4oDQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-Yi4oDQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-Yi4oDQ.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-4EmoBg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-4EmoBg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-4EmoBg.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/rainbow_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/rainbow_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-RFolxA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-RFolxA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-RFolxA@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-JLAU_Q@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-JLAU_Q@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-JLAU_Q@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/rainbow_01@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/rainbow_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/rainbow_01-ZwOKBQ@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/rainbow_01@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/rainbow_01-ZwOKBQ@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/rainbow_01-ZwOKBQ@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/board_02.png": {
+            "isFolder": false,
+            "parent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1759879386953,
+                "duration": 22.825899999937974,
+                "success": true
+            },
+            "hash": "pkRccg"
+        },
+        ".assetpack/mipmap/board_02.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-ke-FDw.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-ke-FDw.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-ke-FDw.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-r4URXw.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-r4URXw.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-r4URXw.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-dvKw0w.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-dvKw0w.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-dvKw0w.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/board_02@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/assets/board_02.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-ZlcrRA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-ZlcrRA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-ZlcrRA@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-aJBREA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-aJBREA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-aJBREA@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/board_02@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/board_02@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/board_02-1hXWIg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/board_02@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/Users/Cody/coding/spacetimedb/BookClubJam-25/client/public/board_02-1hXWIg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/board_02-1hXWIg@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}

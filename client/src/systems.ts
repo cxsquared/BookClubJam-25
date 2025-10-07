@@ -98,17 +98,15 @@ export class PositionLimiter extends SystemFactory<{}>("PositionLimit", {
     positionLimitQuery(world).forEach(({ sprite, position, limit }) => {
       const width = sprite.sprite.width;
       const height = sprite.sprite.height;
-      const centerX = width / 2 + position.x;
-      const centerY = height / 2 + position.y;
 
-      if (centerX < limit.x) position.x = limit.x + width;
+      if (position.x < limit.x) position.x = limit.x;
 
-      if (centerX > limit.x + limit.width)
+      if (position.x > limit.x + limit.width - width)
         position.x = limit.x + limit.width - width;
 
-      if (centerY < limit.y) position.y = limit.y + height;
+      if (position.y < limit.y) position.y = limit.y;
 
-      if (centerY > limit.y + limit.height)
+      if (position.y > limit.y + limit.height - height)
         position.y = limit.y + limit.height - height;
     });
   },

@@ -10,6 +10,11 @@ export const DECOR_KEYS = [
   "star_01",
   "paw_01",
   "board_01",
+  "board_02",
+  "rainbow_01",
+  "cat_01",
+  "face_01",
+  "leaf_01",
 ];
 
 export function randomDecorKey(): string {
