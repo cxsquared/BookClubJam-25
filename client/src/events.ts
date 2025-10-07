@@ -1,12 +1,7 @@
-import { EventMap } from "@typeonce/ecs";
-import {
-  Decor,
-  DeleteDecor,
-  Door,
-  MoveDecor,
-  Reducer,
-} from "./module_bindings";
+import { EntityId, EventMap } from "@typeonce/ecs";
+import { Decor, DeleteDecor, Door, MoveDecor } from "./module_bindings";
 import { ReducerEvent } from "spacetimedb";
+import { GrabbedComponent } from "./components";
 
 export const DecorAdded = Symbol("DecorAdded");
 export const DecorUpdated = Symbol("DecorUpdated");
@@ -17,11 +12,13 @@ export const MoveDecorFailed = Symbol("MoveDecorFailed");
 export const MoveDecorSucceeded = Symbol("MoveDecorSucceeded");
 export const DeleteDecorSucceeded = Symbol("MoveDecorSucceeded");
 export const DeleteDecorFailed = Symbol("DeleteDecorFailed");
+export const DecorGrabbed = Symbol("DecorGrabbed");
 
 export interface GameEventMap extends EventMap {
   [DecorAdded]: { decor: Decor };
   [DecorUpdated]: { decor: Decor };
   [DecorDeleted]: { decor: Decor };
+  [DecorGrabbed]: { id: EntityId; component: GrabbedComponent };
   [MoveDecorFailed]: {
     event: ReducerEvent<{ name: "MoveDecor"; args: MoveDecor }>;
   };

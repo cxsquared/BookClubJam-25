@@ -36,6 +36,12 @@ import { Tween } from "@tweenjs/tween.js";
 //"wss://space.codyclaborn.me"
 const spacedbUri = "ws://localhost:3000";
 
+declare global {
+  var editingText: boolean;
+}
+
+globalThis.editingText = false;
+
 (async () => {
   const app = new Application();
   await app.init({
@@ -117,6 +123,7 @@ const spacedbUri = "ws://localhost:3000";
     container.addChild(progressBar);
     world = ECS.create<SystemTags, GameEventMap>(
       ({ addComponent, createEntity, addSystem }) => {
+        const doorId = createEntity();
         const door = new PSprite(AssetManager.Assets.door);
         door.anchor.set(0, 0);
         door.eventMode = "dynamic";
@@ -134,24 +141,27 @@ const spacedbUri = "ws://localhost:3000";
           })
         );
 
+        const mListener = new MouseListener(door, doorId);
+
         addComponent(
           createEntity(),
           new Cursor({
-            dragging: undefined,
-            listener: new MouseListener(door),
+            listener: mListener,
+            grabbedEvents: [],
           }),
           new Position({ x: 0, y: 0, yOffset: 0, skew: 0 })
         );
 
         addComponent(createEntity(), new EnergyComponent({ bar: progressBar }));
         addComponent(
-          createEntity(),
+          doorId,
           new Position({ x: door.x, y: door.y, yOffset: 0, skew: 0 }),
           new Sprite({ sprite: door }),
           new DoorComponent(),
           new MouseEvents({
-            listener: new MouseListener(door),
-            onClick: (x, y) => {
+            listener: mListener,
+            onClick: (_id, _sprite, x, y) => {
+              if (editingText) return;
               const key = randomDecorKey();
 
               conn.reducers.createDecor(key, x, y);

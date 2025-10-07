@@ -1,8 +1,8 @@
 import { Component, EntityId } from "@typeonce/ecs";
-import { Sprite as _Sprite } from "pixi.js";
+import { Sprite as _Sprite, Container } from "pixi.js";
 import { Decor } from "./module_bindings";
 import { MouseListener } from "./systems";
-import { ProgressBar } from "@pixi/ui";
+import { Input, ProgressBar } from "@pixi/ui";
 import { Tween } from "@tweenjs/tween.js";
 
 export class Position extends Component("Position")<{
@@ -20,7 +20,7 @@ export class PositionLimit extends Component("PositionLimit")<{
 }> {}
 
 export class Sprite extends Component("Sprite")<{
-  sprite: _Sprite;
+  sprite: _Sprite | Input | Container;
 }> {}
 
 export class DecorComponent extends Component("Decor")<{
@@ -34,7 +34,13 @@ export class DoorComponent extends Component("Door")<{}> {}
 
 export class MouseEvents extends Component("MouseEvents")<{
   listener: MouseListener;
-  onClick: (x: number, y: number) => void;
+  onClick: (id: EntityId, sprite: _Sprite, x: number, y: number) => void;
+}> {}
+
+export class GrabbedComponent extends Component("GrabbedComponent")<{
+  xOffset: number;
+  yOffset: number;
+  sprite: _Sprite;
 }> {}
 
 export class EnergyComponent extends Component("EnergyComponent")<{
@@ -42,8 +48,8 @@ export class EnergyComponent extends Component("EnergyComponent")<{
 }> {}
 
 export class Cursor extends Component("Cursor")<{
-  dragging: EntityId | undefined;
   listener: MouseListener;
+  grabbedEvents: { id: EntityId; component: GrabbedComponent }[];
 }> {}
 
 export class OpenDoorController extends Component("OpenDoorController")<{

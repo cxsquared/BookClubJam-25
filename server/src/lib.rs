@@ -148,7 +148,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
 
     log::debug!("Giving energy to user");
     ctx.db.user().identity().update(User {
-        energy: (user.energy + cmp::min(5, 50 - ((visited_count as u32) * 2)))
+        energy: (user.energy + cmp::max(5, 50 - ((visited_count as u32) * 2)))
             .clamp(ENERGY_MIN, ENERGY_MAX),
         ..user
     });
@@ -255,12 +255,19 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
 
     check_has_enough_energy(&user, energy_needed)?;
 
-    ctx.db.decor().delete(decor);
+    if let Some(owner) = ctx.db.user().identity().find(decor.owner) {
+        ctx.db.user().identity().update(User {
+            energy: (owner.energy + energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
+            ..owner
+        });
+    }
 
     ctx.db.user().identity().update(User {
         energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
         ..user
     });
+
+    ctx.db.decor().delete(decor);
 
     Ok(())
 }

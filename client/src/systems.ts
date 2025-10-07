@@ -1,4 +1,4 @@
-import { query, queryRequired, System } from "@typeonce/ecs";
+import { EntityId, query, queryRequired, System } from "@typeonce/ecs";
 import { Container, Sprite as PSprite, Rectangle } from "pixi.js";
 import {
   DecorAdded,
@@ -16,6 +16,7 @@ import {
   DecorComponent,
   DoorComponent,
   EnergyComponent,
+  GrabbedComponent,
   MouseEvents,
   OpenDoorController,
   Position,
@@ -31,8 +32,10 @@ import {
 } from "./module_bindings";
 import { Identity, ReducerEvent } from "spacetimedb";
 import { InputManager } from "./input_manager";
-import { AssetManager } from "./Globals";
+import { AssetManager, isTextDecor } from "./Globals";
 import { Tween } from "@tweenjs/tween.js";
+import { Input } from "@pixi/ui";
+import { profanity } from "@2toad/profanity";
 
 export type SystemTags =
   | "Render"
@@ -166,10 +169,12 @@ export class MouseListener {
   public justEntered: boolean = false;
   public mouseX: number = 0;
   public mouseY: number = 0;
-  public sprite: Container;
+  public sprite: PSprite;
+  public id: EntityId;
 
-  constructor(sprite: Container) {
+  constructor(sprite: PSprite, id: EntityId) {
     this.sprite = sprite;
+    this.id = id;
     const downEvent = "pointerdown";
     sprite.on(downEvent, (e) => {
       this.isMouseUp = false;
@@ -206,6 +211,8 @@ export class MouseInput extends SystemFactory<{}>("MouseInput", {
     mouseListenerQuery(world).forEach((e) => {
       if (e.mouseEvents.listener.isMouseJustDown) {
         e.mouseEvents.onClick(
+          e.mouseEvents.listener.id,
+          e.mouseEvents.listener.sprite,
           e.mouseEvents.listener.mouseX,
           e.mouseEvents.listener.mouseY
         );
@@ -225,60 +232,151 @@ export class DecorSpawnSystem extends SystemFactory<{
     poll,
     createEntity,
     addComponent,
+    getComponent,
     input: { ctx, conn },
   }) => {
     const { position: doorPosition, sprite: doorSprite } = doorQuery(world)[0];
 
     poll(DecorAdded).forEach((event) => {
       const decor = event.data.decor;
-      const sprite = new PSprite(AssetManager.Assets[event.data.decor.key]);
-      sprite.label = `decor:${decor.id}:${decor.key}`;
-      sprite.x = decor.x;
-      sprite.y = decor.y;
-      sprite.cursor = "pointer";
-      sprite.anchor.set(0.5, 0.5);
-      ctx.addChild(sprite);
-      sprite.eventMode = "static";
+      let spriteContainer = new Container();
+      spriteContainer.label = `decor:${decor.id}:${decor.key}`;
+      spriteContainer.interactiveChildren = true;
+      spriteContainer.eventMode = "static";
 
-      const listener = new MouseListener(sprite);
-      const position = new Position({
-        x: decor.x,
-        y: decor.y,
-        yOffset: 0,
-        skew: 0,
-      });
+      const id = createEntity();
+      let grabOffsetY = 0;
+      let deleteOffsetX = 6;
+      let delteOffsetY = 6;
 
-      const cursor = cursorQuery(world)[0].cursor;
+      ctx.addChild(spriteContainer);
+
+      let listener;
+
+      if (isTextDecor(event.data.decor.key)) {
+        const bg = new PSprite(AssetManager.Assets[event.data.decor.key]);
+        const input = new Input({
+          bg,
+          padding: [0, 0, 0, 0],
+          textStyle: {
+            align: "center",
+            fontFamily: '"Comic Sans MS", cursive, sans-serif',
+            fontSize: 12,
+            fontVariant: "small-caps",
+            lineHeight: 12,
+            wordWrap: true,
+            wordWrapWidth: bg.width - 8,
+            breakWords: true,
+          },
+          maxLength: 58,
+          value: event.data.decor.text,
+          align: "center",
+          addMask: true,
+        });
+        input.interactive = conn.identity && decor.owner.isEqual(conn.identity);
+        input.onChange.connect(() => {
+          globalThis.editingText = true;
+        });
+        input.onEnter.connect((newText) => {
+          input.value = profanity.censor(newText);
+          globalThis.editingText = false;
+          conn.reducers.updateDecorText(decor.id, input.value);
+        });
+
+        const hanger = new PSprite(AssetManager.Assets.hanger_01);
+        hanger.label = "hanger";
+        hanger.eventMode = "dynamic";
+        hanger.cursor = "grab";
+        listener = new MouseListener(hanger, id);
+
+        input.y += hanger.height;
+
+        hanger.on("pointerenter", () => {
+          const grabbed = getComponent({ grabbed: GrabbedComponent })(id);
+
+          if (!grabbed?.grabbed) {
+            deleteSprite.visible = true;
+          }
+        });
+
+        spriteContainer.addChild(hanger);
+        spriteContainer.addChild(input);
+
+        spriteContainer.width = bg.width;
+        spriteContainer.height = bg.height + hanger.height;
+        spriteContainer.scale = 1;
+
+        deleteOffsetX = hanger.width / 2 - 22;
+        grabOffsetY = -input.height / 2 - hanger.height / 2;
+      } else {
+        const sprite = new PSprite(AssetManager.Assets[event.data.decor.key]);
+        sprite.cursor = "grab";
+        sprite.anchor.set(0, 0);
+        sprite.eventMode = "dynamic";
+
+        listener = new MouseListener(sprite, id);
+        spriteContainer.addChild(sprite);
+
+        sprite.on("pointerenter", () => {
+          const grabbed = getComponent({ grabbed: GrabbedComponent })(id);
+
+          if (!grabbed?.grabbed) {
+            deleteSprite.visible = true;
+          }
+        });
+
+        spriteContainer.width = sprite.width;
+        spriteContainer.height = sprite.height;
+      }
 
       const deleteSprite = new PSprite(AssetManager.Assets.delete);
       deleteSprite.visible = false;
-      deleteSprite.x = sprite.width / 2 - 2;
-      deleteSprite.y = -sprite.height / 2 - 6;
+      deleteSprite.x = spriteContainer.width - deleteOffsetX;
+      deleteSprite.y = -delteOffsetY;
       deleteSprite.hitArea = new Rectangle(
         0,
         0,
         deleteSprite.width,
         deleteSprite.height
       );
-      deleteSprite.eventMode = "static";
+      deleteSprite.eventMode = "dynamic";
       deleteSprite.on("pointerdown", (e) => {
         conn.reducers.deleteDecor(decor.id);
         e.stopPropagation();
       });
 
-      sprite.addChild(deleteSprite);
+      spriteContainer.addChild(deleteSprite);
 
-      const id = createEntity();
+      spriteContainer.x = decor.x - spriteContainer.width / 2;
+      spriteContainer.y = decor.y - spriteContainer.height / 2;
 
-      sprite.on("pointerenter", () => {
-        if (!cursor.dragging) {
-          deleteSprite.visible = true;
-        }
-      });
-
-      sprite.on("pointerleave", () => {
+      spriteContainer.eventMode = "static";
+      spriteContainer.interactiveChildren = true;
+      spriteContainer.on("pointerleave", (e) => {
         deleteSprite.visible = false;
       });
+
+      const position = new Position({
+        x: spriteContainer.x,
+        y: spriteContainer.y,
+        yOffset: 0,
+        skew: 0,
+      });
+
+      const cursor = cursorQuery(world)[0];
+      const onClick = (id: EntityId, sprite: PSprite, x: number, y: number) => {
+        sprite.cursor = "grabbing";
+        cursor.cursor.grabbedEvents.push({
+          id,
+          component: new GrabbedComponent({
+            xOffset: position.x - x,
+            yOffset: grabOffsetY,
+            sprite,
+          }),
+        });
+
+        deleteSprite.visible = false;
+      };
 
       const decorComp = new DecorComponent({
         decor,
@@ -294,7 +392,7 @@ export class DecorSpawnSystem extends SystemFactory<{
       addComponent(
         id,
         position,
-        new Sprite({ sprite }),
+        new Sprite({ sprite: spriteContainer }),
         decorComp,
         new PositionLimit({
           x: doorPosition.x,
@@ -304,14 +402,7 @@ export class DecorSpawnSystem extends SystemFactory<{
         }),
         new MouseEvents({
           listener,
-          onClick: (x, y) => {
-            cursor.dragging = id;
-
-            position.x = x;
-            position.y = y;
-
-            deleteSprite.visible = false;
-          },
+          onClick,
         })
       );
     });
@@ -542,7 +633,7 @@ export class KeyInputSystem extends SystemFactory<{
   conn: DbConnection;
 }>("KeyInput", {
   execute: ({ world, destroyEntity, input: { inputManager, conn } }) => {
-    if (inputManager.isKeyPressed("Space")) {
+    if (!globalThis.editingText && inputManager.isKeyPressed("Space")) {
       const openDoor = openDoorQuery(world)[0];
       const door = doorQuery(world)[0];
 
@@ -567,39 +658,51 @@ export class KeyInputSystem extends SystemFactory<{
   },
 }) {}
 
+const grabbedQuery = query({
+  grabbed: GrabbedComponent,
+  sprite: Sprite,
+  position: Position,
+  decor: DecorComponent,
+});
+
 export class CursorSystem extends SystemFactory<{
   conn: DbConnection;
 }>("CursorSystem", {
-  execute: ({ getComponent, world, input: { conn } }) => {
+  execute: ({ world, addComponent, removeComponent, input: { conn } }) => {
     const cursorEntity = cursorQuery(world)[0];
 
     cursorEntity.position.x = cursorEntity.cursor.listener.mouseX;
     cursorEntity.position.y = cursorEntity.cursor.listener.mouseY;
 
-    if (cursorEntity.cursor.dragging) {
-      const decorEntity = getComponent({
-        decor: DecorComponent,
-        position: Position,
-      })(cursorEntity.cursor.dragging);
+    cursorEntity.cursor.grabbedEvents.forEach(({ id, component }) => {
+      addComponent(id, component);
+    });
+    cursorEntity.cursor.grabbedEvents = [];
 
-      if (decorEntity) {
-        decorEntity.position.x = cursorEntity.cursor.listener.mouseX;
-        decorEntity.position.y = cursorEntity.cursor.listener.mouseY;
+    grabbedQuery(world).forEach(
+      ({ entityId, grabbed, sprite, position, decor }) => {
+        position.x =
+          cursorEntity.cursor.listener.mouseX - sprite.sprite.width / 2;
+        position.y =
+          cursorEntity.cursor.listener.mouseY -
+          sprite.sprite.height / 2 -
+          grabbed.yOffset;
 
         if (
-          decorEntity.decor.inputListener.isMouseJustUp ||
-          decorEntity.decor.inputListener.isMouseUp
+          decor.inputListener.isMouseJustUp ||
+          decor.inputListener.isMouseUp
         ) {
-          cursorEntity.cursor.dragging = undefined;
+          grabbed.sprite.cursor = "grab";
+          removeComponent(entityId, GrabbedComponent);
           conn.reducers.moveDecor(
-            decorEntity.decor.decor.id,
+            decor.decor.id,
             cursorEntity.cursor.listener.mouseX,
             cursorEntity.cursor.listener.mouseY,
             0
           );
         }
       }
-    }
+    );
   },
 }) {}
 

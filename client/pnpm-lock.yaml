@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@2toad/profanity':
+        specifier: ^3.2.0
+        version: 3.2.0
       '@pixi/devtools':
         specifier: ^2.0.1
         version: 2.0.1(pixi.js@8.13.2)
@@ -35,6 +38,10 @@ importers:
         version: 7.1.9(@types/node@24.7.0)
 
 packages:
+
+  '@2toad/profanity@3.2.0':
+    resolution: {integrity: sha512-1wF0F9SXBS8zsn74ZyDKhClSH+5Tupycq2F1x34+/1YKhrq49ejs+imH8/YIS/JwXoj2oUY+KTpoyOxJeNA2mQ==}
+    engines: {node: '>=12'}
 
   '@assetpack/core@1.5.3':
     resolution: {integrity: sha512-Jkt6BYyTtdBNXlyAitlp4coiiva89YD0ew4Mewklp0G0F4OdJaSeKAtS1y59Os0oxjG4KA+i5bWMCkfm3Ki2pA==}
@@ -1894,6 +1901,8 @@ packages:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
+
+  '@2toad/profanity@3.2.0': {}
 
   '@assetpack/core@1.5.3':
     dependencies:
