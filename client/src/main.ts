@@ -2,6 +2,7 @@ import { ECS, World } from "@typeonce/ecs";
 import { Application, Container, Graphics, Sprite as PSprite } from "pixi.js";
 import {
   CursorSystem,
+  DecorMoveEventSystem,
   DecorSpawnSystem,
   EnergySystem,
   KeyInputSystem,
@@ -129,7 +130,6 @@ const spacedbUri = "ws://localhost:3000";
           new OpenDoorController({
             isOpen: false,
             previousState: false,
-            tweenTime: 0,
             tween: new Tween({ yOffset: 0, skew: 0 }),
           })
         );
@@ -166,6 +166,7 @@ const spacedbUri = "ws://localhost:3000";
           new DecorSpawnSystem({ ctx: container }),
           new EnergySystem(),
           new CursorSystem({ conn }),
+          new DecorMoveEventSystem(),
           new PositionLimiter(),
           new OpenDoor(),
           new RenderSystem()

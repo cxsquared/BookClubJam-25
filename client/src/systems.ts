@@ -5,6 +5,8 @@ import {
   DecorDeleted,
   DecorUpdated,
   GameEventMap,
+  MoveDecorFailed,
+  MoveDecorSucceeded,
   UserEnergyChanged,
 } from "./events";
 import {
@@ -18,8 +20,8 @@ import {
   PositionLimit,
   Sprite,
 } from "./components";
-import { DbConnection, Decor, User } from "./module_bindings";
-import { Identity } from "spacetimedb";
+import { DbConnection, Decor, MoveDecor, User } from "./module_bindings";
+import { Identity, ReducerEvent } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { AssetManager } from "./Globals";
 import { Tween } from "@tweenjs/tween.js";
@@ -33,7 +35,8 @@ export type SystemTags =
   | "KeyInput"
   | "EnergySystem"
   | "CursorSystem"
-  | "OpenDoorSystem";
+  | "OpenDoorSystem"
+  | "DecorMoveEventSystem";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
@@ -99,6 +102,35 @@ export class PositionLimiter extends SystemFactory<{}>("PositionLimit", {
     });
   },
 }) {}
+
+export class DecorMoveEventSystem extends SystemFactory<{}>(
+  "DecorMoveEventSystem",
+  {
+    execute: ({ world, poll }) => {
+      poll(MoveDecorFailed).forEach(({ data }) => {
+        const decor = decorQuery(world).find(
+          (d) => d.decor.decor.id === data.event.reducer.args.decorId
+        );
+
+        if (decor) {
+          decor.position.x = decor.decor.originalPosition.x;
+          decor.position.y = decor.decor.originalPosition.y;
+        }
+      });
+
+      poll(MoveDecorSucceeded).forEach(({ data }) => {
+        const decor = decorQuery(world).find(
+          (d) => d.decor.decor.id === data.event.reducer.args.decorId
+        );
+
+        if (decor) {
+          decor.decor.originalPosition.x = decor.position.x;
+          decor.decor.originalPosition.y = decor.position.y;
+        }
+      });
+    },
+  }
+) {}
 
 export class MouseListener {
   public isMouseJustDown: boolean = false;
@@ -183,11 +215,21 @@ export class DecorSpawnSystem extends SystemFactory<{
       });
 
       const id = createEntity();
+      const decorComp = new DecorComponent({
+        decor,
+        inputListener: listener,
+        originalPosition: new Position({
+          x: decor.x,
+          y: decor.y,
+          yOffset: 0,
+          skew: 0,
+        }),
+      });
       addComponent(
         id,
         position,
         new Sprite({ sprite }),
-        new DecorComponent({ decor, inputListener: listener }),
+        decorComp,
         new PositionLimit({
           x: doorPosition.x,
           y: doorPosition.y,
@@ -199,6 +241,7 @@ export class DecorSpawnSystem extends SystemFactory<{
           onClick: (x, y) => {
             const cursor = cursorQuery(world)[0].cursor;
             cursor.dragging = id;
+
             position.x = x;
             position.y = y;
           },
@@ -213,6 +256,12 @@ export class SpacetimeDBListener {
   public readonly decorDeleted: Decor[];
   public readonly decorUpdated: Decor[];
   public readonly userUpdated: User[];
+
+  public readonly moveDecorEvent: ReducerEvent<{
+    name: "MoveDecor";
+    args: MoveDecor;
+  }>[];
+
   public currentDoorId: BigInt = BigInt(0);
   public userSub;
   public doorSub;
@@ -223,8 +272,18 @@ export class SpacetimeDBListener {
     this.decorDeleted = [];
     this.decorUpdated = [];
     this.userUpdated = [];
+    this.moveDecorEvent = [];
 
     console.log("building listeners");
+
+    conn.reducers.onMoveDecor((ctx) => {
+      this.moveDecorEvent.push(
+        ctx.event as ReducerEvent<{
+          name: "MoveDecor";
+          args: MoveDecor;
+        }>
+      );
+    });
 
     this.doorSub = conn
       .subscriptionBuilder()
@@ -361,6 +420,22 @@ export class SpacetimeDBEventSystem extends SystemFactory<{
       });
       updatedDecor = listener.decorUpdated.shift();
     }
+
+    let failedMoveDecor = listener.moveDecorEvent.shift();
+    while (failedMoveDecor) {
+      if (failedMoveDecor.status.tag === "Committed") {
+        emit({
+          type: MoveDecorSucceeded,
+          data: { event: failedMoveDecor },
+        });
+      } else if (failedMoveDecor.status.tag === "Failed") {
+        emit({
+          type: MoveDecorFailed,
+          data: { event: failedMoveDecor },
+        });
+      }
+      failedMoveDecor = listener.moveDecorEvent.shift();
+    }
   },
 }) {}
 
@@ -408,6 +483,7 @@ export class CursorSystem extends SystemFactory<{
         decor: DecorComponent,
         position: Position,
       })(cursorEntity.cursor.dragging);
+
       if (decorEntity) {
         decorEntity.position.x = cursorEntity.cursor.listener.mouseX;
         decorEntity.position.y = cursorEntity.cursor.listener.mouseY;

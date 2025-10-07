@@ -26,6 +26,7 @@ export class Sprite extends Component("Sprite")<{
 export class DecorComponent extends Component("Decor")<{
   decor: Decor;
   inputListener: MouseListener;
+  originalPosition: Position;
 }> {}
 
 export class DoorComponent extends Component("Door")<{}> {}

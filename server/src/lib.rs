@@ -161,7 +161,7 @@ pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result
     let user = get_user(ctx)?;
     let energy_needed = CREATE_ENERGY;
 
-    let _ = check_has_enough_energy(&user, energy_needed);
+    check_has_enough_energy(&user, energy_needed)?;
 
     let door = ctx
         .db
@@ -211,7 +211,7 @@ pub fn move_decor(
     let energy_needed = MODIFY_ENERGY;
 
     if decor.owner != user.identity {
-        let _ = check_has_enough_energy(&user, energy_needed);
+        check_has_enough_energy(&user, energy_needed)?;
 
         ctx.db.user().identity().update(User {
             energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
@@ -253,7 +253,7 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         DELETE_OTHER_ENERGY
     };
 
-    let _ = check_has_enough_energy(&user, energy_needed);
+    check_has_enough_energy(&user, energy_needed)?;
 
     ctx.db.decor().delete(decor);
 
@@ -325,7 +325,13 @@ fn get_user(ctx: &ReducerContext) -> Result<User, String> {
 }
 
 fn check_has_enough_energy(user: &User, energy: u32) -> Result<(), String> {
-    if user.energy - energy <= ENERGY_MIN - 1 {
+    let user_energy = user.energy;
+
+    if let Some(new_energy) = user_energy.checked_sub(energy) {
+        if new_energy < ENERGY_MIN {
+            return Err("Not enough energy for action".to_string());
+        }
+    } else {
         return Err("Not enough energy for action".to_string());
     }
 
