@@ -12,6 +12,7 @@ import {
   UserEnergyChanged,
 } from "./events";
 import {
+  BackgroundComponent,
   Cursor,
   DecorComponent,
   DoorComponent,
@@ -32,8 +33,8 @@ import {
 } from "./module_bindings";
 import { Identity, ReducerEvent } from "spacetimedb";
 import { InputManager } from "./input_manager";
-import { AssetManager, isTextDecor } from "./Globals";
-import { Tween } from "@tweenjs/tween.js";
+import { APP_WIDTH, AssetManager, isTextDecor } from "./Globals";
+import { Easing, Tween } from "@tweenjs/tween.js";
 import { Input } from "@pixi/ui";
 import { profanity } from "@2toad/profanity";
 
@@ -86,7 +87,7 @@ const positionLimitQuery = query({
 export class RenderSystem extends SystemFactory<{}>("Render", {
   execute: ({ world }) => {
     pixiRender(world).forEach(({ sprite, position }) => {
-      sprite.sprite.x = position.x;
+      sprite.sprite.x = position.x + position.xOffset;
       sprite.sprite.y = position.y + position.yOffset;
       sprite.sprite.skew.y = position.skew;
     });
@@ -357,6 +358,7 @@ export class DecorSpawnSystem extends SystemFactory<{
       const position = new Position({
         x: spriteContainer.x,
         y: spriteContainer.y,
+        xOffset: 0,
         yOffset: 0,
         skew: 0,
       });
@@ -382,6 +384,7 @@ export class DecorSpawnSystem extends SystemFactory<{
         originalPosition: new Position({
           x: decor.x,
           y: decor.y,
+          xOffset: 0,
           yOffset: 0,
           skew: 0,
         }),
@@ -626,6 +629,12 @@ export class SpacetimeDBEventSystem extends SystemFactory<{
   },
 }) {}
 
+const backgroundQuery = queryRequired({
+  background: BackgroundComponent,
+  sprite: Sprite,
+  position: Position,
+});
+
 export class KeyInputSystem extends SystemFactory<{
   inputManager: InputManager;
   conn: DbConnection;
@@ -634,16 +643,27 @@ export class KeyInputSystem extends SystemFactory<{
     if (!globalThis.editingText && inputManager.isKeyPressed("Space")) {
       const openDoor = openDoorQuery(world)[0];
       const door = doorQuery(world)[0];
+      const background = backgroundQuery(world)[0];
 
       openDoor.openController.isOpen = true;
 
       openDoor.openController.tween.onComplete(() => {
-        openDoor.openController.tween = new Tween({ yOffset: 0, skew: 0 });
+        openDoor.openController.tween = new Tween({
+          xOffset: 0,
+          yOffset: 0,
+          skew: 0,
+          bgScale: 1,
+        });
+        openDoor.openController.tween.easing(Easing.Exponential.InOut);
+        door.sprite.sprite.scale = 1;
         door.position.skew = 0;
         door.position.yOffset = 0;
+        door.position.xOffset = 0;
         conn.reducers.enterDoor();
         openDoor.openController.isOpen = false;
         openDoor.openController.previousState = false;
+
+        background.sprite.sprite.scale = 1;
 
         for (const decor of decorQuery(world)) {
           decor.sprite.sprite.removeFromParent();
@@ -723,21 +743,22 @@ const openDoorQuery = queryRequired({
   openController: OpenDoorController,
 });
 
-const openYOffset = 23;
-const openYSkew = -0.1;
+const openYOffset = 239;
+const openXOffset = APP_WIDTH;
+const openYSkew = -1.6;
 export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
   execute: ({ world }) => {
     const { openController } = openDoorQuery(world)[0];
 
     const door = doorQuery(world)[0];
     const decorItems = decorQuery(world);
+    const background = backgroundQuery(world)[0];
 
     if (openController.isOpen) {
       door.position.yOffset = openYOffset;
       door.position.skew = openYSkew;
       decorItems.forEach((decor) => {
         decor.position.yOffset = openYOffset * 0.25;
-        decor.position.skew = openYSkew;
       });
     }
 
@@ -750,18 +771,28 @@ export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
 
     openController.tween.onUpdate((values) => {
       door.position.yOffset = values.yOffset;
+      door.position.xOffset = values.xOffset;
       door.position.skew = values.skew;
+      door.sprite.sprite.scale = values.bgScale;
+      background.sprite.sprite.scale = values.bgScale;
       decorItems.forEach((decor) => {
         decor.position.yOffset = values.yOffset * 0.25;
+        decor.position.xOffset = values.xOffset;
         decor.position.skew = values.skew;
+        decor.sprite.sprite.scale = values.bgScale;
       });
     });
 
     if (openController.isOpen && !openController.previousState) {
-      openController.tween.to({ yOffset: openYOffset, skew: openYSkew });
+      openController.tween.to({
+        yOffset: openYOffset,
+        xOffset: openXOffset,
+        skew: openYSkew,
+        bgScale: 5,
+      });
       openController.tween.startFromCurrentValues();
     } else if (!openController.isOpen && openController.previousState) {
-      openController.tween.to({ yOffset: 0, skew: 0 });
+      openController.tween.to({ yOffset: 0, xOffset: 0, skew: 0, bgScale: 1 });
       openController.tween.startFromCurrentValues();
     }
 

@@ -17,6 +17,7 @@ import {
 } from "./systems";
 import { GameEventMap } from "./events";
 import {
+  BackgroundComponent,
   Cursor,
   DoorComponent,
   EnergyComponent,
@@ -31,7 +32,7 @@ import { InputManager } from "./input_manager";
 import { ProgressBar } from "@pixi/ui";
 import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
 import { initDevtools } from "@pixi/devtools";
-import { Tween } from "@tweenjs/tween.js";
+import { Easing, Tween } from "@tweenjs/tween.js";
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = "ws://localhost:3000";
@@ -67,6 +68,7 @@ globalThis.editingText = false;
   const bgSprite = new PSprite(AssetManager.Assets.bg);
   bgSprite.label = "background";
   bgSprite.eventMode = "dynamic";
+  bgSprite.anchor = { x: 0.5, y: 0.5 };
 
   container.addChild(bgSprite);
 
@@ -134,12 +136,20 @@ globalThis.editingText = false;
         door.label = "door";
         container.addChild(door);
 
+        const openTween = new Tween({
+          yOffset: 0,
+          xOffset: 0,
+          skew: 0,
+          bgScale: 1,
+        });
+        openTween.easing(Easing.Exponential.InOut);
+
         addComponent(
           createEntity(),
           new OpenDoorController({
             isOpen: false,
             previousState: false,
-            tween: new Tween({ yOffset: 0, skew: 0 }),
+            tween: openTween,
           })
         );
 
@@ -151,13 +161,32 @@ globalThis.editingText = false;
             listener: mListener,
             grabbedEvents: [],
           }),
-          new Position({ x: 0, y: 0, yOffset: 0, skew: 0 })
+          new Position({ x: 0, y: 0, yOffset: 0, xOffset: 0, skew: 0 })
+        );
+
+        addComponent(
+          createEntity(),
+          new Sprite({ sprite: bgSprite }),
+          new Position({
+            x: APP_WIDTH / 2,
+            y: APP_HEIGHT / 2,
+            xOffset: 0,
+            yOffset: 0,
+            skew: 0,
+          }),
+          new BackgroundComponent()
         );
 
         addComponent(createEntity(), new EnergyComponent({ bar: progressBar }));
         addComponent(
           doorId,
-          new Position({ x: door.x, y: door.y, yOffset: 0, skew: 0 }),
+          new Position({
+            x: door.x,
+            y: door.y,
+            yOffset: 0,
+            xOffset: 0,
+            skew: 0,
+          }),
           new Sprite({ sprite: door }),
           new DoorComponent(),
           new MouseEvents({

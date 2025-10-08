@@ -8,6 +8,7 @@ import { Tween } from "@tweenjs/tween.js";
 export class Position extends Component("Position")<{
   x: number;
   y: number;
+  xOffset: number;
   yOffset: number;
   skew: number;
 }> {}
@@ -31,6 +32,8 @@ export class DecorComponent extends Component("Decor")<{
 }> {}
 
 export class DoorComponent extends Component("Door")<{}> {}
+
+export class BackgroundComponent extends Component("Background")<{}> {}
 
 export class MouseEvents extends Component("MouseEvents")<{
   listener: MouseListener;
