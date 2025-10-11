@@ -42,6 +42,8 @@ import { LikeDecor } from "./like_decor_reducer.ts";
 export { LikeDecor };
 import { MoveDecor } from "./move_decor_reducer.ts";
 export { MoveDecor };
+import { OpenPackage } from "./open_package_reducer.ts";
+export { OpenPackage };
 import { UpdateDecorText } from "./update_decor_text_reducer.ts";
 export { UpdateDecorText };
 
@@ -50,8 +52,16 @@ import { DecorTableHandle } from "./decor_table.ts";
 export { DecorTableHandle };
 import { DoorTableHandle } from "./door_table.ts";
 export { DoorTableHandle };
+import { DoorVisitTableHandle } from "./door_visit_table.ts";
+export { DoorVisitTableHandle };
 import { InteractionTableHandle } from "./interaction_table.ts";
 export { InteractionTableHandle };
+import { InventoryTableHandle } from "./inventory_table.ts";
+export { InventoryTableHandle };
+import { PackageTableHandle } from "./package_table.ts";
+export { PackageTableHandle };
+import { PackageItemTableHandle } from "./package_item_table.ts";
+export { PackageItemTableHandle };
 import { UserTableHandle } from "./user_table.ts";
 export { UserTableHandle };
 
@@ -60,8 +70,16 @@ import { Decor } from "./decor_type.ts";
 export { Decor };
 import { Door } from "./door_type.ts";
 export { Door };
+import { DoorVisit } from "./door_visit_type.ts";
+export { DoorVisit };
 import { Interaction } from "./interaction_type.ts";
 export { Interaction };
+import { Inventory } from "./inventory_type.ts";
+export { Inventory };
+import { Package } from "./package_type.ts";
+export { Package };
+import { PackageItem } from "./package_item_type.ts";
+export { PackageItem };
 import { User } from "./user_type.ts";
 export { User };
 
@@ -85,6 +103,10 @@ const REMOTE_MODULE = {
         colType: (Door.getTypeScriptAlgebraicType() as __AlgebraicTypeVariants.Product).value.elements[0].algebraicType,
       },
     },
+    door_visit: {
+      tableName: "door_visit",
+      rowType: DoorVisit.getTypeScriptAlgebraicType(),
+    },
     interaction: {
       tableName: "interaction",
       rowType: Interaction.getTypeScriptAlgebraicType(),
@@ -92,6 +114,33 @@ const REMOTE_MODULE = {
       primaryKeyInfo: {
         colName: "id",
         colType: (Interaction.getTypeScriptAlgebraicType() as __AlgebraicTypeVariants.Product).value.elements[0].algebraicType,
+      },
+    },
+    inventory: {
+      tableName: "inventory",
+      rowType: Inventory.getTypeScriptAlgebraicType(),
+      primaryKey: "id",
+      primaryKeyInfo: {
+        colName: "id",
+        colType: (Inventory.getTypeScriptAlgebraicType() as __AlgebraicTypeVariants.Product).value.elements[0].algebraicType,
+      },
+    },
+    package: {
+      tableName: "package",
+      rowType: Package.getTypeScriptAlgebraicType(),
+      primaryKey: "id",
+      primaryKeyInfo: {
+        colName: "id",
+        colType: (Package.getTypeScriptAlgebraicType() as __AlgebraicTypeVariants.Product).value.elements[0].algebraicType,
+      },
+    },
+    package_item: {
+      tableName: "package_item",
+      rowType: PackageItem.getTypeScriptAlgebraicType(),
+      primaryKey: "id",
+      primaryKeyInfo: {
+        colName: "id",
+        colType: (PackageItem.getTypeScriptAlgebraicType() as __AlgebraicTypeVariants.Product).value.elements[0].algebraicType,
       },
     },
     user: {
@@ -128,6 +177,10 @@ const REMOTE_MODULE = {
     move_decor: {
       reducerName: "move_decor",
       argsType: MoveDecor.getTypeScriptAlgebraicType(),
+    },
+    open_package: {
+      reducerName: "open_package",
+      argsType: OpenPackage.getTypeScriptAlgebraicType(),
     },
     update_decor_text: {
       reducerName: "update_decor_text",
@@ -169,25 +222,26 @@ export type Reducer = never
 | { name: "IdentityConnected", args: IdentityConnected }
 | { name: "LikeDecor", args: LikeDecor }
 | { name: "MoveDecor", args: MoveDecor }
+| { name: "OpenPackage", args: OpenPackage }
 | { name: "UpdateDecorText", args: UpdateDecorText }
 ;
 
 export class RemoteReducers {
   constructor(private connection: __DbConnectionImpl, private setCallReducerFlags: SetReducerFlags) {}
 
-  createDecor(key: string, x: number, y: number) {
-    const __args = { key, x, y };
+  createDecor(inventoryId: bigint, x: number, y: number) {
+    const __args = { inventoryId, x, y };
     let __writer = new __BinaryWriter(1024);
     CreateDecor.serialize(__writer, __args);
     let __argsBuffer = __writer.getBuffer();
     this.connection.callReducer("create_decor", __argsBuffer, this.setCallReducerFlags.createDecorFlags);
   }
 
-  onCreateDecor(callback: (ctx: ReducerEventContext, key: string, x: number, y: number) => void) {
+  onCreateDecor(callback: (ctx: ReducerEventContext, inventoryId: bigint, x: number, y: number) => void) {
     this.connection.onReducer("create_decor", callback);
   }
 
-  removeOnCreateDecor(callback: (ctx: ReducerEventContext, key: string, x: number, y: number) => void) {
+  removeOnCreateDecor(callback: (ctx: ReducerEventContext, inventoryId: bigint, x: number, y: number) => void) {
     this.connection.offReducer("create_decor", callback);
   }
 
@@ -259,6 +313,22 @@ export class RemoteReducers {
     this.connection.offReducer("move_decor", callback);
   }
 
+  openPackage(packageId: bigint) {
+    const __args = { packageId };
+    let __writer = new __BinaryWriter(1024);
+    OpenPackage.serialize(__writer, __args);
+    let __argsBuffer = __writer.getBuffer();
+    this.connection.callReducer("open_package", __argsBuffer, this.setCallReducerFlags.openPackageFlags);
+  }
+
+  onOpenPackage(callback: (ctx: ReducerEventContext, packageId: bigint) => void) {
+    this.connection.onReducer("open_package", callback);
+  }
+
+  removeOnOpenPackage(callback: (ctx: ReducerEventContext, packageId: bigint) => void) {
+    this.connection.offReducer("open_package", callback);
+  }
+
   updateDecorText(decorId: bigint, text: string) {
     const __args = { decorId, text };
     let __writer = new __BinaryWriter(1024);
@@ -303,6 +373,11 @@ export class SetReducerFlags {
     this.moveDecorFlags = flags;
   }
 
+  openPackageFlags: __CallReducerFlags = 'FullUpdate';
+  openPackage(flags: __CallReducerFlags) {
+    this.openPackageFlags = flags;
+  }
+
   updateDecorTextFlags: __CallReducerFlags = 'FullUpdate';
   updateDecorText(flags: __CallReducerFlags) {
     this.updateDecorTextFlags = flags;
@@ -323,9 +398,29 @@ export class RemoteTables {
     return new DoorTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<Door>(REMOTE_MODULE.tables.door));
   }
 
+  get doorVisit(): DoorVisitTableHandle {
+    // clientCache is a private property
+    return new DoorVisitTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<DoorVisit>(REMOTE_MODULE.tables.door_visit));
+  }
+
   get interaction(): InteractionTableHandle {
     // clientCache is a private property
     return new InteractionTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<Interaction>(REMOTE_MODULE.tables.interaction));
+  }
+
+  get inventory(): InventoryTableHandle {
+    // clientCache is a private property
+    return new InventoryTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<Inventory>(REMOTE_MODULE.tables.inventory));
+  }
+
+  get package(): PackageTableHandle {
+    // clientCache is a private property
+    return new PackageTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<Package>(REMOTE_MODULE.tables.package));
+  }
+
+  get packageItem(): PackageItemTableHandle {
+    // clientCache is a private property
+    return new PackageItemTableHandle((this.connection as unknown as { clientCache: __ClientCache }).clientCache.getOrCreateTable<PackageItem>(REMOTE_MODULE.tables.package_item));
   }
 
   get user(): UserTableHandle {

@@ -6,9 +6,14 @@ import {
   DecorUpdated,
   DeleteDecorFailed,
   DeleteDecorSucceeded,
+  FadeEvent,
   GameEventMap,
+  InventoryAdded,
+  InventoryDeleted,
   MoveDecorFailed,
   MoveDecorSucceeded,
+  PackageAdded,
+  PackageDeleted,
   UserEnergyChanged,
 } from "./events";
 import {
@@ -17,26 +22,25 @@ import {
   DecorComponent,
   DoorComponent,
   EnergyComponent,
+  FadeComponent,
   GrabbedComponent,
+  InventoryComponent,
   MouseEvents,
   OpenDoorController,
+  PackageComponent,
   Position,
   PositionLimit,
   Sprite,
+  TweenComponent,
 } from "./components";
-import {
-  DbConnection,
-  Decor,
-  DeleteDecor,
-  MoveDecor,
-  User,
-} from "./module_bindings";
-import { Identity, ReducerEvent } from "spacetimedb";
+import { DbConnection } from "./module_bindings";
 import { InputManager } from "./input_manager";
-import { APP_WIDTH, AssetManager, isTextDecor } from "./Globals";
+import { APP_HEIGHT, APP_WIDTH, AssetManager, isTextDecor } from "./Globals";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { Input } from "@pixi/ui";
 import { profanity } from "@2toad/profanity";
+import { SpacetimeDBListener } from "./spacetimedb.listener";
+import { PositionTween } from "./main";
 
 export type SystemTags =
   | "Render"
@@ -48,13 +52,21 @@ export type SystemTags =
   | "EnergySystem"
   | "CursorSystem"
   | "OpenDoorSystem"
-  | "DecorEventSystem";
+  | "FadeSystem"
+  | "DecorEventSystem"
+  | "InventoryEventSystem"
+  | "PackageEventSystem"
+  | "TweenSystem";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
 const pixiRender = query({
   position: Position,
   sprite: Sprite,
+});
+
+const fadeQuery = queryRequired({
+  fade: FadeComponent,
 });
 
 const doorQuery = queryRequired({
@@ -84,13 +96,17 @@ const positionLimitQuery = query({
   sprite: Sprite,
 });
 
+let once = false;
+
 export class RenderSystem extends SystemFactory<{}>("Render", {
   execute: ({ world }) => {
-    pixiRender(world).forEach(({ sprite, position }) => {
-      sprite.sprite.x = position.x + position.xOffset;
-      sprite.sprite.y = position.y + position.yOffset;
-      sprite.sprite.skew.y = position.skew;
-    });
+    if (!once) {
+      pixiRender(world).forEach(({ sprite, position }) => {
+        sprite.sprite.x = position.x + position.xOffset;
+        sprite.sprite.y = position.y + position.yOffset;
+        sprite.sprite.skew.y = position.skew;
+      });
+    }
   },
 }) {}
 
@@ -114,6 +130,7 @@ export class PositionLimiter extends SystemFactory<{}>("PositionLimit", {
 }) {}
 
 export class DecorEventSystem extends SystemFactory<{}>("DecorEventSystem", {
+  dependencies: ["SpacetimeDBEventSystem"],
   execute: ({ world, poll, destroyEntity }) => {
     poll(MoveDecorFailed).forEach(({ data }) => {
       const decor = decorQuery(world).find(
@@ -180,8 +197,8 @@ export class MouseListener {
       this.isMouseJustUp = false;
       this.isMouseDown = true;
       this.isMouseJustDown = true;
-      this.mouseX = e.x;
-      this.mouseY = e.y;
+      this.mouseX = e.screenX;
+      this.mouseY = e.screenY;
     });
 
     const upEvent = "pointerup";
@@ -189,8 +206,8 @@ export class MouseListener {
       this.isMouseDown = false;
       this.isMouseJustDown = false;
       this.isMouseUp = true;
-      this.mouseX = e.x;
-      this.mouseY = e.y;
+      this.mouseX = e.screenX;
+      this.mouseY = e.screenY;
     });
 
     sprite.on("globalpointermove", (e) => {
@@ -222,10 +239,121 @@ export class MouseInput extends SystemFactory<{}>("MouseInput", {
   },
 }) {}
 
+export class SpacetimeDBEventSystem extends SystemFactory<{
+  readonly listener: SpacetimeDBListener;
+}>("SpacetimeDBEventSystem", {
+  execute: ({ emit, input: { listener } }) => {
+    let updatedUser = listener.userUpdated.shift();
+    while (updatedUser) {
+      emit({
+        type: UserEnergyChanged,
+        data: { newEnergy: updatedUser.energy },
+      });
+      updatedUser = listener.userUpdated.shift();
+    }
+
+    let addedDecor = listener.decorAdded.shift();
+    while (addedDecor) {
+      emit({
+        type: DecorAdded,
+        data: { decor: addedDecor },
+      });
+      addedDecor = listener.decorAdded.shift();
+    }
+
+    let deletedDecor = listener.decorDeleted.shift();
+    while (deletedDecor) {
+      emit({
+        type: DecorDeleted,
+        data: { decor: deletedDecor },
+      });
+      deletedDecor = listener.decorDeleted.shift();
+    }
+
+    let updatedDecor = listener.decorUpdated.shift();
+    while (updatedDecor) {
+      emit({
+        type: DecorUpdated,
+        data: { decor: updatedDecor },
+      });
+      updatedDecor = listener.decorUpdated.shift();
+    }
+
+    let failedMoveDecor = listener.moveDecorEvent.shift();
+    while (failedMoveDecor) {
+      if (failedMoveDecor.status.tag === "Committed") {
+        emit({
+          type: MoveDecorSucceeded,
+          data: { event: failedMoveDecor },
+        });
+      } else if (failedMoveDecor.status.tag === "Failed") {
+        emit({
+          type: MoveDecorFailed,
+          data: { event: failedMoveDecor },
+        });
+      }
+      failedMoveDecor = listener.moveDecorEvent.shift();
+    }
+
+    let failedDeleteDecor = listener.deleteDecorEvent.shift();
+    while (failedDeleteDecor) {
+      if (failedDeleteDecor.status.tag === "Failed") {
+        emit({
+          type: DeleteDecorFailed,
+          data: { event: failedDeleteDecor },
+        });
+      } else if (failedDeleteDecor.status.tag === "Committed") {
+        emit({
+          type: DeleteDecorSucceeded,
+          data: { event: failedDeleteDecor },
+        });
+      }
+      failedDeleteDecor = listener.deleteDecorEvent.shift();
+    }
+
+    let inventoryAdded = listener.inventoryAdded.shift();
+    while (inventoryAdded) {
+      emit({
+        type: InventoryAdded,
+        data: { inventory: inventoryAdded },
+      });
+      inventoryAdded = listener.inventoryAdded.shift();
+    }
+
+    let inventoryDeleted = listener.inventoryDeleted.shift();
+    while (inventoryDeleted) {
+      emit({
+        type: InventoryDeleted,
+        data: { inventory: inventoryDeleted },
+      });
+      inventoryDeleted = listener.inventoryDeleted.shift();
+    }
+
+    let packageAdded = listener.packageAdded.shift();
+    while (packageAdded) {
+      emit({
+        type: PackageAdded,
+        data: { package: packageAdded },
+      });
+      packageAdded = listener.packageAdded.shift();
+    }
+
+    let packageDeleted = listener.packageDeleted.shift();
+    while (packageDeleted) {
+      emit({
+        type: PackageDeleted,
+        data: { package: packageDeleted },
+      });
+      packageDeleted = listener.packageDeleted.shift();
+    }
+  },
+}) {}
+
 export class DecorSpawnSystem extends SystemFactory<{
   readonly ctx: Container;
   readonly conn: DbConnection;
 }>("DecorSpawn", {
+  dependencies: ["SpacetimeDBEventSystem"],
   execute: ({
     world,
     poll,
@@ -410,222 +538,110 @@ export class DecorSpawnSystem extends SystemFactory<{
   },
 }) {}
 
-export class SpacetimeDBListener {
-  public readonly decorAdded: Decor[];
-  public readonly decorDeleted: Decor[];
-  public readonly decorUpdated: Decor[];
-  public readonly userUpdated: User[];
+const inventoryQuery = queryRequired({
+  inventory: InventoryComponent,
+});
 
-  public readonly moveDecorEvent: ReducerEvent<{
-    name: "MoveDecor";
-    args: MoveDecor;
-  }>[];
+export class InventoryEventSystem extends SystemFactory<{}>(
+  "InventoryEventSystem",
+  {
+    dependencies: ["SpacetimeDBEventSystem"],
+    execute: ({ world, poll }) => {
+      const { inventory } = inventoryQuery(world)[0];
 
-  public readonly deleteDecorEvent: ReducerEvent<{
-    name: "DeleteDecor";
-    args: DeleteDecor;
-  }>[];
+      poll(InventoryAdded).forEach(({ data }) => {
+        inventory.inventory.push(data.inventory);
+      });
 
-  public currentDoorId: BigInt = BigInt(0);
-  public userSub;
-  public doorSub;
-  public decorSub;
-
-  constructor(conn: DbConnection, identity: Identity) {
-    this.decorAdded = [];
-    this.decorDeleted = [];
-    this.decorUpdated = [];
-    this.userUpdated = [];
-    this.moveDecorEvent = [];
-    this.deleteDecorEvent = [];
-
-    console.log("building listeners");
-
-    conn.reducers.onMoveDecor((ctx) => {
-      this.moveDecorEvent.push(
-        ctx.event as ReducerEvent<{
-          name: "MoveDecor";
-          args: MoveDecor;
-        }>
-      );
-    });
-
-    conn.reducers.onDeleteDecor((ctx) => {
-      this.deleteDecorEvent.push(
-        ctx.event as ReducerEvent<{
-          name: "DeleteDecor";
-          args: DeleteDecor;
-        }>
-      );
-    });
-
-    this.doorSub = conn
-      .subscriptionBuilder()
-      .onError((ctx) => {
-        console.log(ctx.event);
-      })
-      .onApplied((ctx) => {
-        console.log("door subscribed");
-        if (this.currentDoorId == undefined) return;
-
-        for (const door of ctx.db.door.tableCache.iter()) {
-          if (door.currentVisitor.isEqual(identity)) {
-            console.log("found current door " + door.id);
-            this.currentDoorId = door.id;
-            break;
-          }
-        }
-      })
-      .subscribe([
-        `SELECT * FROM door WHERE current_visitor = 0x${identity.toHexString()}`,
-      ]);
-
-    this.userSub = conn
-      .subscriptionBuilder()
-      .onError((ctx) => {
-        console.log(ctx.event);
-      })
-      .onApplied(() => {
-        console.log("user subbed");
-      })
-      .subscribe(
-        `SELECT * FROM user WHERE identity = 0x${identity.toHexString()}`
-      );
-
-    this.decorSub = conn
-      .subscriptionBuilder()
-      .onError((ctx) => {
-        console.log(ctx.event);
-      })
-      .onApplied(() => {
-        console.log("decor Sub");
-      })
-      .subscribe(`SELECT * FROM decor WHERE door_id = ${this.currentDoorId}`);
-
-    conn.db.door.onInsert((_ctx, row) => {
-      console.log("new door " + row.id);
-      this.currentDoorId = row.id;
-
-      const newSubscription = conn
-        .subscriptionBuilder()
-        .onError((ctx) => {
-          console.log(ctx.event);
-        })
-        .onApplied(() => {
-          console.log("new decor sub");
-        })
-        .subscribe(`SELECT * FROM decor WHERE door_id = ${this.currentDoorId}`);
-
-      if (this.decorSub.isActive()) {
-        this.decorSub.unsubscribe();
-      }
-
-      this.decorSub = newSubscription;
-    });
-
-    conn.db.user.onInsert((_ctx, row) => {
-      this.userUpdated.push(row);
-    });
-
-    conn.db.user.onUpdate((_ctx, _oldRow, newRow) => {
-      console.log(
-        "user updated " + newRow.identity.toHexString().substring(0, 8)
-      );
-      this.userUpdated.push(newRow);
-    });
-
-    conn.db.decor.onInsert((_, row) => {
-      console.log("decor added " + row.id);
-
-      if (this.currentDoorId && row.doorId == this.currentDoorId)
-        this.decorAdded.push(row);
-    });
-
-    conn.db.decor.onDelete((_, row) => {
-      console.log("decor deleted " + row.id);
-
-      this.decorDeleted.push(row);
-    });
-
-    conn.db.decor.onUpdate((_ctx, _oldRow, newRow) => {
-      console.log("decor updated " + newRow.id);
-
-      this.decorUpdated.push(newRow);
-    });
+      poll(InventoryDeleted).forEach(({ data }) => {
+        const index = inventory.inventory.indexOf(data.inventory);
+        inventory.inventory.splice(index);
+      });
+    },
   }
-}
+) {}
 
-export class SpacetimeDBEventSystem extends SystemFactory<{
-  readonly listener: SpacetimeDBListener;
-}>("SpacetimeDBEventSystem", {
-  execute: ({ emit, input: { listener } }) => {
-    let updatedUser = listener.userUpdated.shift();
-    while (updatedUser) {
-      emit({
-        type: UserEnergyChanged,
-        data: { newEnergy: updatedUser.energy },
-      });
-      updatedUser = listener.userUpdated.shift();
-    }
+const packageQuery = query({
+  package: PackageComponent,
+  sprite: Sprite,
+});
 
-    let addedDecor = listener.decorAdded.shift();
-    while (addedDecor) {
-      emit({
-        type: DecorAdded,
-        data: { decor: addedDecor },
-      });
-      addedDecor = listener.decorAdded.shift();
-    }
+export class PackageEventSystem extends SystemFactory<{
+  container: Container;
+  conn: DbConnection;
+}>("PackageEventSystem", {
+  dependencies: ["SpacetimeDBEventSystem"],
+  execute: ({
+    world,
+    poll,
+    createEntity,
+    addComponent,
+    getComponent,
+    destroyEntity,
+    input: { container, conn },
+  }) => {
+    const existingPackages = packageQuery(world);
 
-    let deletedDecor = listener.decorDeleted.shift();
-    while (deletedDecor) {
-      emit({
-        type: DecorDeleted,
-        data: { decor: deletedDecor },
-      });
-      deletedDecor = listener.decorDeleted.shift();
-    }
+    poll(PackageDeleted).forEach(({ data }) => {
+      const packageToDelete = existingPackages.find(
+        (ep) => ep.package.package.id === data.package.id
+      );
 
-    let updatedDecor = listener.decorUpdated.shift();
-    while (updatedDecor) {
-      emit({
-        type: DecorUpdated,
-        data: { decor: updatedDecor },
-      });
-      updatedDecor = listener.decorUpdated.shift();
-    }
+      if (packageToDelete) {
+        destroyEntity(packageToDelete.entityId);
 
-    let failedMoveDecor = listener.moveDecorEvent.shift();
-    while (failedMoveDecor) {
-      if (failedMoveDecor.status.tag === "Committed") {
-        emit({
-          type: MoveDecorSucceeded,
-          data: { event: failedMoveDecor },
-        });
-      } else if (failedMoveDecor.status.tag === "Failed") {
-        emit({
-          type: MoveDecorFailed,
-          data: { event: failedMoveDecor },
-        });
+        packageToDelete.sprite.sprite.destroy();
       }
-      failedMoveDecor = listener.moveDecorEvent.shift();
-    }
+    });
 
-    let failedDeleteDecor = listener.deleteDecorEvent.shift();
-    while (failedDeleteDecor) {
-      if (failedDeleteDecor.status.tag === "Failed") {
-        emit({
-          type: DeleteDecorFailed,
-          data: { event: failedDeleteDecor },
-        });
-      } else if (failedDeleteDecor.status.tag === "Committed") {
-        emit({
-          type: DeleteDecorSucceeded,
-          data: { event: failedDeleteDecor },
-        });
-      }
-      failedDeleteDecor = listener.deleteDecorEvent.shift();
-    }
+    poll(PackageAdded).forEach(({ data }) => {
+      const entityId = createEntity();
+
+      const sprite = new PSprite(AssetManager.Assets.package);
+      sprite.label = `package:${data.package.id}`;
+      sprite.interactive = true;
+
+      const x =
+        APP_WIDTH / 2 + Math.random() * (APP_WIDTH / 2) - sprite.width - 5;
+      const y = APP_HEIGHT - sprite.height + 5;
+
+      sprite.x = x;
+      sprite.y = y;
+
+      sprite.zIndex = 50;
+      container.addChild(sprite);
+
+      const listener = new MouseListener(sprite, entityId);
+
+      addComponent(
+        entityId,
+        new PackageComponent({
+          package: data.package,
+        }),
+        new Position({
+          x: x,
+          y: y,
+          xOffset: 0,
+          yOffset: 0,
+          skew: 0,
+        }),
+        new Sprite({
+          sprite: sprite,
+        }),
+        new MouseEvents({
+          listener: listener,
+          onClick: (id, _sprite, _x, _y) => {
+            const packageItem = getComponent({
+              package: PackageComponent,
+            })(id);
+
+            if (packageItem) {
+              conn.reducers.openPackage(packageItem.package.package.id);
+            }
+          },
+        })
+      );
+    });
   },
 }) {}
 
@@ -639,7 +655,7 @@ export class KeyInputSystem extends SystemFactory<{
   inputManager: InputManager;
   conn: DbConnection;
 }>("KeyInput", {
-  execute: ({ world, destroyEntity, input: { inputManager, conn } }) => {
+  execute: ({ world, destroyEntity, emit, input: { inputManager, conn } }) => {
     if (!globalThis.editingText && inputManager.isKeyPressed("Space")) {
       const openDoor = openDoorQuery(world)[0];
       const door = doorQuery(world)[0];
@@ -647,14 +663,14 @@ export class KeyInputSystem extends SystemFactory<{
 
       openDoor.openController.isOpen = true;
 
-      openDoor.openController.tween.onComplete(() => {
-        openDoor.openController.tween = new Tween({
+      openDoor.tween.tween.onComplete(() => {
+        openDoor.tween.tween = new Tween({
           xOffset: 0,
           yOffset: 0,
           skew: 0,
           bgScale: 1,
         });
-        openDoor.openController.tween.easing(Easing.Exponential.InOut);
+        openDoor.tween.tween.easing(Easing.Exponential.InOut);
         door.sprite.sprite.scale = 1;
         door.position.skew = 0;
         door.position.yOffset = 0;
@@ -662,6 +678,13 @@ export class KeyInputSystem extends SystemFactory<{
         conn.reducers.enterDoor();
         openDoor.openController.isOpen = false;
         openDoor.openController.previousState = false;
+
+        emit({
+          type: FadeEvent,
+          data: {
+            isFadeOut: false,
+          },
+        });
 
         background.sprite.sprite.scale = 1;
 
@@ -729,6 +752,7 @@ const energyBarQuery = query({
 });
 
 export class EnergySystem extends SystemFactory<{}>("EnergySystem", {
+  dependencies: ["SpacetimeDBEventSystem"],
   execute: ({ poll, world }) => {
     const energyBars = energyBarQuery(world);
     poll(UserEnergyChanged).forEach((event) => {
@@ -741,14 +765,15 @@ export class EnergySystem extends SystemFactory<{}>("EnergySystem", {
 
 const openDoorQuery = queryRequired({
   openController: OpenDoorController,
+  tween: TweenComponent<PositionTween>,
 });
 
-const openYOffset = 239;
-const openXOffset = APP_WIDTH;
-const openYSkew = -1.6;
+const openYOffset = -350;
+const openXOffset = 400;
+const openYSkew = -1.4;
 export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
-  execute: ({ world }) => {
-    const { openController } = openDoorQuery(world)[0];
+  execute: ({ world, emit }) => {
+    const { openController, tween } = openDoorQuery(world)[0];
 
     const door = doorQuery(world)[0];
     const decorItems = decorQuery(world);
@@ -764,12 +789,12 @@ export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
 
     if (
       openController.isOpen === openController.previousState &&
-      !openController.tween.isPlaying()
+      !tween.tween.isPlaying()
     ) {
       return;
     }
 
-    openController.tween.onUpdate((values) => {
+    tween.tween.onUpdate((values) => {
       door.position.yOffset = values.yOffset;
       door.position.xOffset = values.xOffset;
       door.position.skew = values.skew;
@@ -784,23 +809,68 @@ export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
     });
 
     if (openController.isOpen && !openController.previousState) {
-      openController.tween.to({
+      tween.tween.to({
         yOffset: openYOffset,
         xOffset: openXOffset,
         skew: openYSkew,
         bgScale: 5,
       });
-      openController.tween.startFromCurrentValues();
+      tween.tween.startFromCurrentValues();
+      emit({
+        type: FadeEvent,
+        data: {
+          isFadeOut: true,
+        },
+      });
     } else if (!openController.isOpen && openController.previousState) {
-      openController.tween.to({ yOffset: 0, xOffset: 0, skew: 0, bgScale: 1 });
-      openController.tween.startFromCurrentValues();
+      tween.tween.to({ yOffset: 0, xOffset: 0, skew: 0, bgScale: 1 });
+      tween.tween.startFromCurrentValues();
     }
 
-    if (!openController.tween.isPlaying()) {
-      openController.tween.start();
+    if (!tween.tween.isPlaying()) {
+      tween.tween.start();
     }
-    openController.tween.update();
 
     openController.previousState = openController.isOpen;
+  },
+}) {}
+
+export class FadeSystem extends SystemFactory<{}>("FadeSystem", {
+  dependencies: ["OpenDoorSystem"],
+  execute: ({ world, poll }) => {
+    const { fade } = fadeQuery(world)[0];
+
+    poll(FadeEvent).forEach(({ data }) => {
+      /*
+      if (data.isFadeOut) {
+        fade.tween.to({
+          alpha: 1,
+        });
+      } else {
+        fade.tween.to({
+          alpha: 0,
+        });
+      }
+
+      fade.tween.onUpdate(({ alpha }) => {
+        fade.graphic.alpha = alpha;
+      });
+
+      fade.tween.start(1500);
+      */
+    });
+  },
+}) {}
+
+const tweenQuery = query({
+  tween: TweenComponent,
+});
+
+export class TweenSystem extends SystemFactory<{}>("TweenSystem", {
+  dependencies: ["OpenDoorSystem", "FadeSystem"],
+  execute: ({ world }) => {
+    tweenQuery(world).forEach(({ tween }) => {
+      tween.tween.update();
+    });
   },
 }) {}

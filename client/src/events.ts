@@ -1,5 +1,12 @@
 import { EntityId, EventMap } from "@typeonce/ecs";
-import { Decor, DeleteDecor, Door, MoveDecor } from "./module_bindings";
+import {
+  Decor,
+  DeleteDecor,
+  Door,
+  Inventory,
+  MoveDecor,
+  Package,
+} from "./module_bindings";
 import { ReducerEvent } from "spacetimedb";
 import { GrabbedComponent } from "./components";
 
@@ -13,6 +20,11 @@ export const MoveDecorSucceeded = Symbol("MoveDecorSucceeded");
 export const DeleteDecorSucceeded = Symbol("MoveDecorSucceeded");
 export const DeleteDecorFailed = Symbol("DeleteDecorFailed");
 export const DecorGrabbed = Symbol("DecorGrabbed");
+export const FadeEvent = Symbol("FadeEvent");
+export const InventoryAdded = Symbol("InventoryAdded");
+export const InventoryDeleted = Symbol("InventoryDeleted");
+export const PackageAdded = Symbol("PackageAdded");
+export const PackageDeleted = Symbol("PackageDeleted");
 
 export interface GameEventMap extends EventMap {
   [DecorAdded]: { decor: Decor };
@@ -33,4 +45,9 @@ export interface GameEventMap extends EventMap {
   };
   [UserEnergyChanged]: { newEnergy: number };
   [ChangeDoor]: { newDoor: Door };
+  [FadeEvent]: { isFadeOut: boolean };
+  [InventoryAdded]: { inventory: Inventory };
+  [InventoryDeleted]: { inventory: Inventory };
+  [PackageAdded]: { package: Package };
+  [PackageDeleted]: { package: Package };
 }

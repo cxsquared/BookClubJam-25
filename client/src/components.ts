@@ -1,6 +1,6 @@
 import { Component, EntityId } from "@typeonce/ecs";
-import { Sprite as _Sprite, Container } from "pixi.js";
-import { Decor } from "./module_bindings";
+import { Sprite as _Sprite, Container, Graphics } from "pixi.js";
+import { Decor, Inventory, Package } from "./module_bindings";
 import { MouseListener } from "./systems";
 import { Input, ProgressBar } from "@pixi/ui";
 import { Tween } from "@tweenjs/tween.js";
@@ -35,6 +35,10 @@ export class DoorComponent extends Component("Door")<{}> {}
 
 export class BackgroundComponent extends Component("Background")<{}> {}
 
+export class FadeComponent extends Component("FadeComponent")<{
+  graphic: Graphics;
+}> {}
+
 export class MouseEvents extends Component("MouseEvents")<{
   listener: MouseListener;
   onClick: (id: EntityId, sprite: _Sprite, x: number, y: number) => void;
@@ -58,5 +62,18 @@ export class Cursor extends Component("Cursor")<{
 export class OpenDoorController extends Component("OpenDoorController")<{
   isOpen: boolean;
   previousState: boolean;
-  tween: Tween;
+}> {}
+
+export class TweenComponent<T extends Record<string, any>> extends Component(
+  "TweenComponent"
+)<{
+  tween: Tween<T>;
+}> {}
+
+export class InventoryComponent extends Component("InventoryComponent")<{
+  inventory: Inventory[];
+}> {}
+
+export class PackageComponent extends Component("PackageComponent")<{
+  package: Package;
 }> {}

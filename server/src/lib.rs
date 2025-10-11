@@ -1,17 +1,33 @@
+use spacetimedb::{
+    rand::{seq::SliceRandom, Rng},
+    reducer, table, Identity, ReducerContext, Table, Timestamp,
+};
 use std::{cmp, collections::HashSet};
-
-use spacetimedb::{reducer, table, Identity, ReducerContext, Table, Timestamp};
 
 const ENERGY_MAX: u32 = 100;
 const ENERGY_MIN: u32 = 1;
 
-const LIKE_DECOR_ENERGY_GAIN: u32 = 33;
-const DELETE_OWN_ENERGY: u32 = 15;
-const DELETE_OTHER_ENERGY: u32 = 25;
-const CREATE_ENERGY: u32 = 10;
-const MODIFY_ENERGY: u32 = 5;
+const LIKE_DECOR_ENERGY_GAIN: u32 = 0; // 33;
+const DELETE_OWN_ENERGY: u32 = 0; // 15;
+const DELETE_OTHER_ENERGY: u32 = 0; // 25;
+const CREATE_ENERGY: u32 = 0; // 10;
+const MODIFY_ENERGY: u32 = 0; // 5;
 
 const INTERACTION_LIKE: &str = "LIKE";
+
+const DECOR_KEYS: [&str; 11] = [
+    "heart_01",
+    "eye_01",
+    "cac_01",
+    "star_01",
+    "paw_01",
+    "board_01",
+    "board_02",
+    "rainbow_01",
+    "cat_01",
+    "face_01",
+    "leaf_01",
+];
 
 #[table(name = user, public)]
 pub struct User {
@@ -64,6 +80,35 @@ pub struct Interaction {
     interaction: String,
 }
 
+#[table(name=inventory, public)]
+pub struct Inventory {
+    #[primary_key]
+    #[auto_inc]
+    id: u64,
+    #[index(btree)]
+    owner: Identity,
+    decor_key: String,
+}
+
+#[table(name=package, public)]
+pub struct Package {
+    #[primary_key]
+    #[auto_inc]
+    id: u64,
+    #[index(btree)]
+    door_id: u64,
+}
+
+#[table(name=package_item)]
+pub struct PackageItem {
+    #[primary_key]
+    #[auto_inc]
+    id: u64,
+    #[index(btree)]
+    package_id: u64,
+    decor_key: String,
+}
+
 #[reducer(client_connected)]
 /// Called when a client connects to a SpacetimeDB database server
 pub fn identity_connected(ctx: &ReducerContext) {
@@ -76,11 +121,7 @@ pub fn identity_connected(ctx: &ReducerContext) {
             energy: 100,
         });
 
-        let door = ctx.db.door().insert(Door {
-            owner: user.identity,
-            id: 0, // 0 tells db to update it to a unique id
-            current_visitor: user.identity,
-        });
+        let door = create_door_for_user(ctx, &user);
 
         ctx.db.user().identity().update(User {
             original_door: Some(door.id),
@@ -133,12 +174,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
             ..new_door
         });
     } else {
-        log::debug!("Building new door to visit");
-        found_door = ctx.db.door().insert(Door {
-            owner: user.identity,
-            id: 0,
-            current_visitor: user.identity,
-        });
+        found_door = create_door_for_user(ctx, &user);
     }
 
     ctx.db.door_visit().insert(DoorVisit {
@@ -157,11 +193,18 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
 }
 
 #[reducer]
-pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result<(), String> {
+pub fn create_decor(ctx: &ReducerContext, inventory_id: u64, x: u32, y: u32) -> Result<(), String> {
     let user = get_user(ctx)?;
     let energy_needed = CREATE_ENERGY;
 
     check_has_enough_energy(&user, energy_needed)?;
+
+    let inventory_item = ctx
+        .db
+        .inventory()
+        .id()
+        .find(inventory_id)
+        .ok_or("Didn't find inventory item {inventory_id}".to_string())?;
 
     let door = ctx
         .db
@@ -169,7 +212,7 @@ pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result
         .current_visitor()
         .filter(user.identity)
         .next()
-        .expect("Cannot add a decor if you aren't at a door");
+        .ok_or("Cannot add a decor if you aren't at a door".to_string())?;
 
     ctx.db.decor().insert(Decor {
         id: 0,
@@ -179,10 +222,12 @@ pub fn create_decor(ctx: &ReducerContext, key: String, x: u32, y: u32) -> Result
         x,
         y,
         rot: 0,
-        key,
+        key: inventory_item.decor_key,
         last_modifier: user.identity,
         deleted_at: None,
     });
+
+    ctx.db.inventory().id().delete(inventory_item.id);
 
     ctx.db.user().identity().update(User {
         energy: (user.energy - energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
@@ -206,7 +251,7 @@ pub fn move_decor(
         .decor()
         .id()
         .find(decor_id)
-        .expect("Decor does not exist");
+        .ok_or("Decor does not exist".to_string())?;
 
     let energy_needed = MODIFY_ENERGY;
 
@@ -245,7 +290,7 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         .decor()
         .id()
         .find(decor_id)
-        .expect("Decor does not exist");
+        .ok_or("Decor does not exist".to_string())?;
 
     let energy_needed = if decor.owner == user.identity {
         DELETE_OWN_ENERGY
@@ -260,6 +305,12 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
             energy: (owner.energy + energy_needed).clamp(ENERGY_MIN, ENERGY_MAX),
             ..owner
         });
+
+        ctx.db.inventory().insert(Inventory {
+            id: 0,
+            owner: owner.identity,
+            decor_key: decor.key,
+        });
     }
 
     ctx.db.user().identity().update(User {
@@ -267,7 +318,7 @@ pub fn delete_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         ..user
     });
 
-    ctx.db.decor().delete(decor);
+    ctx.db.decor().id().delete(decor.id);
 
     Ok(())
 }
@@ -280,7 +331,7 @@ pub fn update_decor_text(ctx: &ReducerContext, decor_id: u64, text: String) -> R
         .decor()
         .id()
         .find(decor_id)
-        .expect("Decor does not exist");
+        .ok_or("Decor does not exist".to_string())?;
 
     ctx.db.decor().id().update(Decor {
         last_modifier: user.identity,
@@ -299,7 +350,7 @@ pub fn like_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
         .decor()
         .id()
         .find(decor_id)
-        .expect("Decor does not exist");
+        .ok_or("Decor does not exist".to_string())?;
 
     if let Some(receiving_user) = ctx.db.user().identity().find(decor.owner) {
         ctx.db.interaction().insert(Interaction {
@@ -320,13 +371,39 @@ pub fn like_decor(ctx: &ReducerContext, decor_id: u64) -> Result<(), String> {
     Ok(())
 }
 
+#[reducer]
+pub fn open_package(ctx: &ReducerContext, package_id: u64) -> Result<(), String> {
+    let package = ctx
+        .db
+        .package()
+        .id()
+        .find(package_id)
+        .ok_or("Could not find package {package_id}".to_string())?;
+
+    let package_items = ctx.db.package_item().package_id().filter(package.id);
+
+    for item in package_items {
+        ctx.db.inventory().insert(Inventory {
+            id: 0,
+            owner: ctx.sender,
+            decor_key: item.decor_key,
+        });
+
+        ctx.db.package_item().id().delete(item.id);
+    }
+
+    ctx.db.package().id().delete(package.id);
+
+    Ok(())
+}
+
 fn get_user(ctx: &ReducerContext) -> Result<User, String> {
     let user = ctx
         .db
         .user()
         .identity()
         .find(ctx.sender)
-        .expect("User does not exit");
+        .ok_or("User does not exit".to_string())?;
 
     Ok(user)
 }
@@ -343,4 +420,53 @@ fn check_has_enough_energy(user: &User, energy: u32) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn create_door_for_user(ctx: &ReducerContext, owner: &User) -> Door {
+    log::debug!("Building new door to visit");
+    let new_door = ctx.db.door().insert(Door {
+        owner: owner.identity,
+        id: 0,
+        current_visitor: owner.identity,
+    });
+
+    // build packages
+    let number_of_packages = ctx.rng().gen_range(1..3);
+
+    log::info!("building {number_of_packages} packages for door");
+
+    for _pn in 0..number_of_packages {
+        let new_package = ctx.db.package().insert(Package {
+            id: 0,
+            door_id: new_door.id,
+        });
+
+        let number_of_decor = ctx.rng().gen_range(3..6);
+
+        log::info!("building {number_of_decor} package items");
+        for _pd in 0..number_of_decor {
+            let decor_key = random_decor_key(ctx);
+            match decor_key {
+                Ok(key) => {
+                    ctx.db.package_item().insert(PackageItem {
+                        id: 0,
+                        package_id: new_package.id,
+                        decor_key: key,
+                    });
+                }
+                Err(e) => {
+                    log::error!("{e}");
+                }
+            }
+        }
+    }
+
+    return new_door;
+}
+
+fn random_decor_key(ctx: &ReducerContext) -> Result<String, String> {
+    match DECOR_KEYS.choose(&mut ctx.rng()) {
+        Some(key) => Ok(key.to_string()),
+        None => return Err("Could not find string key".to_string()),
+    }
 }

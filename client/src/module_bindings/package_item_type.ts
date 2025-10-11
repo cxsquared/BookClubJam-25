@@ -27,15 +27,15 @@ import {
   type SubscriptionEventContextInterface as __SubscriptionEventContextInterface,
 } from "spacetimedb";
 
-export type CreateDecor = {
-  inventoryId: bigint,
-  x: number,
-  y: number,
+export type PackageItem = {
+  id: bigint,
+  packageId: bigint,
+  decorKey: string,
 };
 /**
  * An object for generated helper functions.
  */
-export const CreateDecor = {
+export const PackageItem = {
   /**
   * A function which returns this type represented as an AlgebraicType.
   * This function is derived from the AlgebraicType used to generate this type.
@@ -43,22 +43,23 @@ export const CreateDecor = {
   getTypeScriptAlgebraicType(): __AlgebraicTypeType {
     return __AlgebraicTypeValue.Product({
       elements: [
-        { name: "inventoryId", algebraicType: __AlgebraicTypeValue.U64},
-        { name: "x", algebraicType: __AlgebraicTypeValue.U32},
-        { name: "y", algebraicType: __AlgebraicTypeValue.U32},
+        { name: "id", algebraicType: __AlgebraicTypeValue.U64},
+        { name: "packageId", algebraicType: __AlgebraicTypeValue.U64},
+        { name: "decorKey", algebraicType: __AlgebraicTypeValue.String},
       ]
     });
   },
 
-  serialize(writer: __BinaryWriter, value: CreateDecor): void {
-    __AlgebraicTypeValue.serializeValue(writer, CreateDecor.getTypeScriptAlgebraicType(), value);
+  serialize(writer: __BinaryWriter, value: PackageItem): void {
+    __AlgebraicTypeValue.serializeValue(writer, PackageItem.getTypeScriptAlgebraicType(), value);
   },
 
-  deserialize(reader: __BinaryReader): CreateDecor {
-    return __AlgebraicTypeValue.deserializeValue(reader, CreateDecor.getTypeScriptAlgebraicType());
+  deserialize(reader: __BinaryReader): PackageItem {
+    return __AlgebraicTypeValue.deserializeValue(reader, PackageItem.getTypeScriptAlgebraicType());
   },
 
 }
 
-export default CreateDecor;
+export default PackageItem;
+
 

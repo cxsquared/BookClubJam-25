@@ -5,15 +5,18 @@ import {
   DecorEventSystem,
   DecorSpawnSystem,
   EnergySystem,
+  FadeSystem,
+  InventoryEventSystem,
   KeyInputSystem,
   MouseInput,
   MouseListener,
   OpenDoor,
+  PackageEventSystem,
   PositionLimiter,
   RenderSystem,
   SpacetimeDBEventSystem,
-  SpacetimeDBListener,
   SystemTags,
+  TweenSystem,
 } from "./systems";
 import { GameEventMap } from "./events";
 import {
@@ -21,18 +24,33 @@ import {
   Cursor,
   DoorComponent,
   EnergyComponent,
+  FadeComponent,
+  InventoryComponent,
   MouseEvents,
   OpenDoorController,
   Position,
   Sprite,
+  TweenComponent,
 } from "./components";
-import { DbConnection, ErrorContext } from "./module_bindings";
+import { DbConnection, ErrorContext, Package } from "./module_bindings";
 import { Identity } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { ProgressBar } from "@pixi/ui";
 import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
 import { initDevtools } from "@pixi/devtools";
 import { Easing, Tween } from "@tweenjs/tween.js";
+import { SpacetimeDBListener } from "./spacetimedb.listener";
+
+export type AlphaTween = {
+  alpha: number;
+};
+
+export type PositionTween = {
+  yOffset: number;
+  xOffset: number;
+  skew: number;
+  bgScale: number;
+};
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = "ws://localhost:3000";
@@ -69,6 +87,17 @@ globalThis.editingText = false;
   bgSprite.label = "background";
   bgSprite.eventMode = "dynamic";
   bgSprite.anchor = { x: 0.5, y: 0.5 };
+
+  const fadeGraphic = new Graphics()
+    .rect(0, 0, APP_WIDTH, APP_HEIGHT)
+    .fill(0x000000);
+
+  fadeGraphic.alpha = 0;
+  fadeGraphic.interactive = false;
+  fadeGraphic.eventMode = "none";
+
+  fadeGraphic.zIndex = 100;
+  container.addChild(fadeGraphic);
 
   container.addChild(bgSprite);
 
@@ -127,6 +156,12 @@ globalThis.editingText = false;
     container.addChild(progressBar);
     world = ECS.create<SystemTags, GameEventMap>(
       ({ addComponent, createEntity, addSystem }) => {
+        const inventory = new InventoryComponent({
+          inventory: [],
+        });
+
+        addComponent(createEntity(), inventory);
+
         const doorId = createEntity();
         const door = new PSprite(AssetManager.Assets.door);
         door.anchor.set(0, 0);
@@ -136,7 +171,7 @@ globalThis.editingText = false;
         door.label = "door";
         container.addChild(door);
 
-        const openTween = new Tween({
+        const openTween = new Tween<PositionTween>({
           yOffset: 0,
           xOffset: 0,
           skew: 0,
@@ -149,6 +184,8 @@ globalThis.editingText = false;
           new OpenDoorController({
             isOpen: false,
             previousState: false,
+          }),
+          new TweenComponent<PositionTween>({
             tween: openTween,
           })
         );
@@ -162,6 +199,18 @@ globalThis.editingText = false;
             grabbedEvents: [],
           }),
           new Position({ x: 0, y: 0, yOffset: 0, xOffset: 0, skew: 0 })
+        );
+
+        addComponent(
+          createEntity(),
+          new FadeComponent({
+            graphic: fadeGraphic,
+          }),
+          new TweenComponent<AlphaTween>({
+            tween: new Tween<AlphaTween>({
+              alpha: 0,
+            }),
+          })
         );
 
         addComponent(
@@ -193,23 +242,33 @@ globalThis.editingText = false;
             listener: mListener,
             onClick: (_id, _sprite, x, y) => {
               if (editingText) return;
-              const key = randomDecorKey();
 
-              conn.reducers.createDecor(key, x, y);
+              const inventoryItem =
+                inventory.inventory[
+                  Math.floor(Math.random() * inventory.inventory.length)
+                ];
+
+              if (inventoryItem) {
+                conn.reducers.createDecor(inventoryItem.id, x, y);
+              }
             },
           })
         );
 
         addSystem(
+          new TweenSystem(),
           new MouseInput(),
           new KeyInputSystem({ inputManager: new InputManager(), conn }),
           new SpacetimeDBEventSystem({ listener }),
           new DecorSpawnSystem({ ctx: container, conn }),
+          new PackageEventSystem({ container, conn }),
+          new InventoryEventSystem(),
           new EnergySystem(),
           new CursorSystem({ conn }),
           new DecorEventSystem(),
           new PositionLimiter(),
           new OpenDoor(),
+          new FadeSystem(),
           new RenderSystem()
         );
       }
