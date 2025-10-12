@@ -10,7 +10,7 @@ import {
   KeyInputSystem,
   MouseInput,
   MouseListener,
-  OpenDoor,
+  OpenDoorSystem,
   PackageEventSystem,
   PositionLimiter,
   RenderSystem,
@@ -83,23 +83,17 @@ globalThis.editingText = false;
 
   app.stage.addChild(container);
 
-  const bgSprite = new PSprite(AssetManager.Assets.bg);
-  bgSprite.label = "background";
-  bgSprite.eventMode = "dynamic";
-  bgSprite.anchor = { x: 0.5, y: 0.5 };
-
   const fadeGraphic = new Graphics()
     .rect(0, 0, APP_WIDTH, APP_HEIGHT)
-    .fill(0x000000);
+    .fill(0x00000000);
 
   fadeGraphic.alpha = 0;
+  fadeGraphic.label = "fade";
   fadeGraphic.interactive = false;
   fadeGraphic.eventMode = "none";
-
   fadeGraphic.zIndex = 100;
-  container.addChild(fadeGraphic);
 
-  container.addChild(bgSprite);
+  container.addChild(fadeGraphic);
 
   let world: World<SystemTags, GameEventMap>;
 
@@ -109,6 +103,12 @@ globalThis.editingText = false;
       "Connected to SpacetimeDB with identity:",
       identity.toHexString()
     );
+
+    const bgSprite = new PSprite(AssetManager.Assets.bg);
+    bgSprite.label = "background";
+    bgSprite.eventMode = "dynamic";
+    bgSprite.anchor = { x: 0.5, y: 0.5 };
+    container.addChild(bgSprite);
 
     const listener = new SpacetimeDBListener(conn, identity);
     const barArgs = {
@@ -182,11 +182,12 @@ globalThis.editingText = false;
         addComponent(
           createEntity(),
           new OpenDoorController({
-            isOpen: false,
-            previousState: false,
+            isRunning: false,
           }),
           new TweenComponent<PositionTween>({
             tween: openTween,
+            justCompleted: false,
+            onComplete: undefined,
           })
         );
 
@@ -201,15 +202,22 @@ globalThis.editingText = false;
           new Position({ x: 0, y: 0, yOffset: 0, xOffset: 0, skew: 0 })
         );
 
+        const fadeTween = new Tween<AlphaTween>({
+          alpha: 0,
+        });
+        fadeTween.onUpdate(({ alpha }) => {
+          fadeGraphic.alpha = alpha;
+        });
+
         addComponent(
           createEntity(),
           new FadeComponent({
             graphic: fadeGraphic,
           }),
           new TweenComponent<AlphaTween>({
-            tween: new Tween<AlphaTween>({
-              alpha: 0,
-            }),
+            tween: fadeTween,
+            justCompleted: false,
+            onComplete: undefined,
           })
         );
 
@@ -258,7 +266,7 @@ globalThis.editingText = false;
         addSystem(
           new TweenSystem(),
           new MouseInput(),
-          new KeyInputSystem({ inputManager: new InputManager(), conn }),
+          new KeyInputSystem({ inputManager: new InputManager() }),
           new SpacetimeDBEventSystem({ listener }),
           new DecorSpawnSystem({ ctx: container, conn }),
           new PackageEventSystem({ container, conn }),
@@ -267,7 +275,7 @@ globalThis.editingText = false;
           new CursorSystem({ conn }),
           new DecorEventSystem(),
           new PositionLimiter(),
-          new OpenDoor(),
+          new OpenDoorSystem({ conn }),
           new FadeSystem(),
           new RenderSystem()
         );

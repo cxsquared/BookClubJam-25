@@ -12,6 +12,7 @@ import {
   InventoryDeleted,
   MoveDecorFailed,
   MoveDecorSucceeded,
+  OpenDoorEvent,
   PackageAdded,
   PackageDeleted,
   UserEnergyChanged,
@@ -67,6 +68,7 @@ const pixiRender = query({
 
 const fadeQuery = queryRequired({
   fade: FadeComponent,
+  tween: TweenComponent,
 });
 
 const doorQuery = queryRequired({
@@ -653,46 +655,16 @@ const backgroundQuery = queryRequired({
 
 export class KeyInputSystem extends SystemFactory<{
   inputManager: InputManager;
-  conn: DbConnection;
 }>("KeyInput", {
-  execute: ({ world, destroyEntity, emit, input: { inputManager, conn } }) => {
+  execute: ({ world, emit, input: { inputManager } }) => {
     if (!globalThis.editingText && inputManager.isKeyPressed("Space")) {
       const openDoor = openDoorQuery(world)[0];
-      const door = doorQuery(world)[0];
-      const background = backgroundQuery(world)[0];
-
-      openDoor.openController.isOpen = true;
-
-      openDoor.tween.tween.onComplete(() => {
-        openDoor.tween.tween = new Tween({
-          xOffset: 0,
-          yOffset: 0,
-          skew: 0,
-          bgScale: 1,
-        });
-        openDoor.tween.tween.easing(Easing.Exponential.InOut);
-        door.sprite.sprite.scale = 1;
-        door.position.skew = 0;
-        door.position.yOffset = 0;
-        door.position.xOffset = 0;
-        conn.reducers.enterDoor();
-        openDoor.openController.isOpen = false;
-        openDoor.openController.previousState = false;
-
+      if (!openDoor.openController.isRunning) {
         emit({
-          type: FadeEvent,
-          data: {
-            isFadeOut: false,
-          },
+          type: OpenDoorEvent,
+          data: {},
         });
-
-        background.sprite.sprite.scale = 1;
-
-        for (const decor of decorQuery(world)) {
-          decor.sprite.sprite.removeFromParent();
-          destroyEntity(decor.entityId);
-        }
-      });
+      }
     }
 
     inputManager.tick();
@@ -771,93 +743,113 @@ const openDoorQuery = queryRequired({
 const openYOffset = -350;
 const openXOffset = 400;
 const openYSkew = -1.4;
-export class OpenDoor extends SystemFactory<{}>("OpenDoorSystem", {
-  execute: ({ world, emit }) => {
-    const { openController, tween } = openDoorQuery(world)[0];
+export class OpenDoorSystem extends SystemFactory<{
+  conn: DbConnection;
+}>("OpenDoorSystem", {
+  dependencies: ["TweenSystem"],
+  execute: ({ world, emit, poll, input: { conn } }) => {
+    poll(OpenDoorEvent).forEach(() => {
+      const { openController, tween } = openDoorQuery(world)[0];
+      const door = doorQuery(world)[0];
+      const decorItems = decorQuery(world);
+      const background = backgroundQuery(world)[0];
 
-    const door = doorQuery(world)[0];
-    const decorItems = decorQuery(world);
-    const background = backgroundQuery(world)[0];
+      openController.isRunning = true;
 
-    if (openController.isOpen) {
-      door.position.yOffset = openYOffset;
-      door.position.skew = openYSkew;
-      decorItems.forEach((decor) => {
-        decor.position.yOffset = openYOffset * 0.25;
+      tween.tween.onUpdate((values) => {
+        door.position.yOffset = values.yOffset;
+        door.position.xOffset = values.xOffset;
+        door.position.skew = values.skew;
+        door.sprite.sprite.scale = values.bgScale;
+        background.sprite.sprite.scale = values.bgScale;
+        decorItems.forEach((decor) => {
+          decor.position.yOffset = values.yOffset * 0.25;
+          decor.position.xOffset = values.xOffset;
+          decor.position.skew = values.skew;
+          decor.sprite.sprite.scale = values.bgScale;
+        });
       });
-    }
 
-    if (
-      openController.isOpen === openController.previousState &&
-      !tween.tween.isPlaying()
-    ) {
-      return;
-    }
+      tween.onComplete = ({ emit, destroyEntity }) => {
+        tween.tween = new Tween({
+          xOffset: 0,
+          yOffset: 0,
+          skew: 0,
+          bgScale: 1,
+        });
+        tween.tween.easing(Easing.Exponential.InOut);
+        openController.isRunning = false;
+        door.sprite.sprite.scale = 1;
+        door.position.skew = 0;
+        door.position.yOffset = 0;
+        door.position.xOffset = 0;
+        conn.reducers.enterDoor();
 
-    tween.tween.onUpdate((values) => {
-      door.position.yOffset = values.yOffset;
-      door.position.xOffset = values.xOffset;
-      door.position.skew = values.skew;
-      door.sprite.sprite.scale = values.bgScale;
-      background.sprite.sprite.scale = values.bgScale;
-      decorItems.forEach((decor) => {
-        decor.position.yOffset = values.yOffset * 0.25;
-        decor.position.xOffset = values.xOffset;
-        decor.position.skew = values.skew;
-        decor.sprite.sprite.scale = values.bgScale;
-      });
-    });
+        emit({
+          type: FadeEvent,
+          data: {
+            isFadeOut: false,
+          },
+        });
 
-    if (openController.isOpen && !openController.previousState) {
-      tween.tween.to({
-        yOffset: openYOffset,
-        xOffset: openXOffset,
-        skew: openYSkew,
-        bgScale: 5,
-      });
-      tween.tween.startFromCurrentValues();
+        background.sprite.sprite.scale = 1;
+
+        for (const decor of decorQuery(world)) {
+          decor.sprite.sprite.removeFromParent();
+          destroyEntity(decor.entityId);
+        }
+      };
+
+      tween.tween
+        .to(
+          {
+            yOffset: openYOffset,
+            xOffset: openXOffset,
+            skew: openYSkew,
+            bgScale: 5,
+          },
+          1000
+        )
+        .onComplete(() => {
+          tween.justCompleted = true;
+        })
+        .start();
+
       emit({
         type: FadeEvent,
         data: {
           isFadeOut: true,
         },
       });
-    } else if (!openController.isOpen && openController.previousState) {
-      tween.tween.to({ yOffset: 0, xOffset: 0, skew: 0, bgScale: 1 });
-      tween.tween.startFromCurrentValues();
-    }
-
-    if (!tween.tween.isPlaying()) {
-      tween.tween.start();
-    }
-
-    openController.previousState = openController.isOpen;
+    });
   },
 }) {}
 
 export class FadeSystem extends SystemFactory<{}>("FadeSystem", {
-  dependencies: ["OpenDoorSystem"],
+  dependencies: ["OpenDoorSystem", "KeyInput", "TweenSystem"],
   execute: ({ world, poll }) => {
-    const { fade } = fadeQuery(world)[0];
+    const { tween } = fadeQuery(world)[0];
 
     poll(FadeEvent).forEach(({ data }) => {
-      /*
       if (data.isFadeOut) {
-        fade.tween.to({
-          alpha: 1,
-        });
+        tween.tween.stop();
+        tween.tween.to(
+          {
+            alpha: 1,
+          },
+          1000
+        );
       } else {
-        fade.tween.to({
-          alpha: 0,
-        });
+        tween.tween.stop();
+        tween.tween.to(
+          {
+            alpha: 0,
+          },
+          250
+        );
       }
 
-      fade.tween.onUpdate(({ alpha }) => {
-        fade.graphic.alpha = alpha;
-      });
-
-      fade.tween.start(1500);
-      */
+      tween.tween.startFromCurrentValues();
     });
   },
 }) {}
@@ -867,10 +859,16 @@ const tweenQuery = query({
 });
 
 export class TweenSystem extends SystemFactory<{}>("TweenSystem", {
-  dependencies: ["OpenDoorSystem", "FadeSystem"],
-  execute: ({ world }) => {
+  execute: (exe) => {
+    const { world } = exe;
     tweenQuery(world).forEach(({ tween }) => {
       tween.tween.update();
+
+      if (tween.justCompleted) {
+        if (tween.onComplete) tween.onComplete(exe);
+
+        tween.justCompleted = false;
+      }
     });
   },
 }) {}

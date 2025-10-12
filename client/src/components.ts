@@ -1,9 +1,10 @@
-import { Component, EntityId } from "@typeonce/ecs";
-import { Sprite as _Sprite, Container, Graphics } from "pixi.js";
+import { Component, EntityId, SystemExecute, World } from "@typeonce/ecs";
+import { Sprite as _Sprite, Container, Graphics, System } from "pixi.js";
 import { Decor, Inventory, Package } from "./module_bindings";
-import { MouseListener } from "./systems";
+import { MouseListener, SystemTags } from "./systems";
 import { Input, ProgressBar } from "@pixi/ui";
 import { Tween } from "@tweenjs/tween.js";
+import { GameEventMap } from "./events";
 
 export class Position extends Component("Position")<{
   x: number;
@@ -60,14 +61,17 @@ export class Cursor extends Component("Cursor")<{
 }> {}
 
 export class OpenDoorController extends Component("OpenDoorController")<{
-  isOpen: boolean;
-  previousState: boolean;
+  isRunning: boolean;
 }> {}
 
 export class TweenComponent<T extends Record<string, any>> extends Component(
   "TweenComponent"
 )<{
   tween: Tween<T>;
+  justCompleted: boolean;
+  onComplete:
+    | undefined
+    | ((_: SystemExecute<SystemTags, GameEventMap>) => void);
 }> {}
 
 export class InventoryComponent extends Component("InventoryComponent")<{
