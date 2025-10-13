@@ -12,10 +12,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "pnpm@10.18.2",
   "dependencies": {
     "@2toad/profanity": "^3.2.0",
     "@pixi/devtools": "^2.0.1",
+    "@pixi/layout": "^3.2.0",
     "@pixi/ui": "^2.2.7",
     "@tweenjs/tween.js": "^25.0.0",
     "@typeonce/ecs": "^0.1.0",

@@ -40,6 +40,7 @@ import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
 import { initDevtools } from "@pixi/devtools";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { SpacetimeDBListener } from "./spacetimedb.listener";
+import { InventoryUi } from "./ui/inventory.ui";
 
 export type AlphaTween = {
   alpha: number;
@@ -143,6 +144,24 @@ globalThis.editingText = false;
       )
       .fill(barArgs.fillColor);
 
+    const inventoryUi = new InventoryUi((key, x, y) => {
+      if (editingText) return;
+
+      const inventoryItem = inventoryComp.inventory.find(
+        (i) => i.decorKey === key
+      );
+
+      if (inventoryItem) {
+        conn.reducers.createDecor(inventoryItem.id, x, y);
+      }
+    });
+    container.addChild(inventoryUi);
+
+    const inventoryComp = new InventoryComponent({
+      inventory: [],
+      ui: inventoryUi,
+    });
+
     // Component usage
     let progressBar = new ProgressBar({
       bg,
@@ -156,11 +175,7 @@ globalThis.editingText = false;
     container.addChild(progressBar);
     world = ECS.create<SystemTags, GameEventMap>(
       ({ addComponent, createEntity, addSystem }) => {
-        const inventory = new InventoryComponent({
-          inventory: [],
-        });
-
-        addComponent(createEntity(), inventory);
+        addComponent(createEntity(), inventoryComp);
 
         const doorId = createEntity();
         const door = new PSprite(AssetManager.Assets.door);
@@ -248,18 +263,7 @@ globalThis.editingText = false;
           new DoorComponent(),
           new MouseEvents({
             listener: mListener,
-            onClick: (_id, _sprite, x, y) => {
-              if (editingText) return;
-
-              const inventoryItem =
-                inventory.inventory[
-                  Math.floor(Math.random() * inventory.inventory.length)
-                ];
-
-              if (inventoryItem) {
-                conn.reducers.createDecor(inventoryItem.id, x, y);
-              }
-            },
+            onClick: (_id, _sprite, x, y) => {},
           })
         );
 

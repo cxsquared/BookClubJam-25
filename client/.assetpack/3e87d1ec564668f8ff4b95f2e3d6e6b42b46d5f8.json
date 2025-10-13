@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1760210207582,
-                "duration": 2.6195000000006985,
+                "date": 1760314302868,
+                "duration": 1.9022000001277775,
                 "success": true
             }
         },
@@ -772,6 +772,159 @@
         "C:/dev/spacetimedb/bookclubjam-25/client/public/cat_01-OdiBbw@0.5x.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/cache-buster/cat_01-OdiBbw@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/assets/decor_bg.png": {
+            "isFolder": false,
+            "parent": "C:/dev/spacetimedb/bookclubjam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1760314302868,
+                "duration": 73.38220000010915,
+                "success": true
+            },
+            "hash": "0ItXxQ"
+        },
+        ".assetpack/mipmap/decor_bg.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-MC2p.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-MC2p.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-MC2p.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-lIZOaQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-lIZOaQ.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-lIZOaQ.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-po7Fjg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-po7Fjg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-po7Fjg.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/decor_bg@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/decor_bg.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-0wch7w@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-0wch7w@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-0wch7w@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-MVDeKA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-MVDeKA@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-MVDeKA@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/decor_bg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/decor_bg@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/decor_bg-GflfRg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/decor_bg@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/decor_bg-GflfRg@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/decor_bg-GflfRg@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}
@@ -2302,6 +2455,159 @@
         "C:/dev/spacetimedb/bookclubjam-25/client/public/rainbow_01-ZwOKBQ@0.5x.avif": {
             "isFolder": false,
             "transformParent": ".assetpack/cache-buster/rainbow_01-ZwOKBQ@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/assets/shroom_01.png": {
+            "isFolder": false,
+            "parent": "C:/dev/spacetimedb/bookclubjam-25/client/assets",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {},
+            "stats": {
+                "date": 1760313214663,
+                "duration": 61.76760000013746,
+                "success": true
+            },
+            "hash": "Ki06tw"
+        },
+        ".assetpack/mipmap/shroom_01.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-2mu8jA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-2mu8jA.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-2mu8jA.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-Wgav.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-Wgav.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-Wgav.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-RCHgNg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-RCHgNg.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-RCHgNg.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/mipmap/shroom_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": "C:/dev/spacetimedb/bookclubjam-25/client/assets/shroom_01.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-MKRKZA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-MKRKZA@0.5x.png": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-MKRKZA@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-696L-w@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-696L-w@0.5x.webp": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-696L-w@0.5x.webp",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/compress/shroom_01@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/mipmap/shroom_01@0.5x.png",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        ".assetpack/cache-buster/shroom_01-vmJ_jw@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/compress/shroom_01@0.5x.avif",
+            "metaData": {},
+            "inheritedMetaData": {},
+            "transformData": {}
+        },
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/shroom_01-vmJ_jw@0.5x.avif": {
+            "isFolder": false,
+            "transformParent": ".assetpack/cache-buster/shroom_01-vmJ_jw@0.5x.avif",
             "metaData": {},
             "inheritedMetaData": {},
             "transformData": {}

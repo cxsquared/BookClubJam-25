@@ -5,6 +5,7 @@ import { MouseListener, SystemTags } from "./systems";
 import { Input, ProgressBar } from "@pixi/ui";
 import { Tween } from "@tweenjs/tween.js";
 import { GameEventMap } from "./events";
+import { InventoryUi } from "./ui/inventory.ui";
 
 export class Position extends Component("Position")<{
   x: number;
@@ -29,7 +30,7 @@ export class DecorComponent extends Component("Decor")<{
   decor: Decor;
   inputListener: MouseListener;
   originalPosition: Position;
-  deleteSprite: _Sprite;
+  deleteSprite: _Sprite | undefined;
 }> {}
 
 export class DoorComponent extends Component("Door")<{}> {}
@@ -76,6 +77,7 @@ export class TweenComponent<T extends Record<string, any>> extends Component(
 
 export class InventoryComponent extends Component("InventoryComponent")<{
   inventory: Inventory[];
+  ui: InventoryUi;
 }> {}
 
 export class PackageComponent extends Component("PackageComponent")<{

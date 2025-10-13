@@ -381,8 +381,9 @@ export class DecorSpawnSystem extends SystemFactory<{
       ctx.addChild(spriteContainer);
 
       let listener;
+      const isText = isTextDecor(event.data.decor.key);
 
-      if (isTextDecor(event.data.decor.key)) {
+      if (isText) {
         const bg = new PSprite(AssetManager.Assets[event.data.decor.key]);
         const input = new Input({
           bg,
@@ -423,7 +424,7 @@ export class DecorSpawnSystem extends SystemFactory<{
         hanger.on("pointerenter", () => {
           const grabbed = getComponent({ grabbed: GrabbedComponent })(id);
 
-          if (!grabbed?.grabbed) {
+          if (deleteSprite && !grabbed?.grabbed) {
             deleteSprite.visible = true;
           }
         });
@@ -449,7 +450,7 @@ export class DecorSpawnSystem extends SystemFactory<{
         sprite.on("pointerenter", () => {
           const grabbed = getComponent({ grabbed: GrabbedComponent })(id);
 
-          if (!grabbed?.grabbed) {
+          if (deleteSprite && !grabbed?.grabbed) {
             deleteSprite.visible = true;
           }
         });
@@ -458,32 +459,37 @@ export class DecorSpawnSystem extends SystemFactory<{
         spriteContainer.height = sprite.height;
       }
 
-      const deleteSprite = new PSprite(AssetManager.Assets.delete);
-      deleteSprite.visible = false;
-      deleteSprite.x = spriteContainer.width - deleteOffsetX;
-      deleteSprite.y = -delteOffsetY;
-      deleteSprite.hitArea = new Rectangle(
-        0,
-        0,
-        deleteSprite.width,
-        deleteSprite.height
-      );
-      deleteSprite.eventMode = "dynamic";
-      deleteSprite.on("pointerdown", (e) => {
-        conn.reducers.deleteDecor(decor.id);
-        e.stopPropagation();
-      });
+      let deleteSprite: PSprite | undefined;
+      if (!isText || conn.identity?.isEqual(event.data.decor.owner)) {
+        deleteSprite = new PSprite(AssetManager.Assets.delete);
+        deleteSprite.visible = false;
+        deleteSprite.x = spriteContainer.width - deleteOffsetX;
+        deleteSprite.y = -delteOffsetY;
+        deleteSprite.hitArea = new Rectangle(
+          0,
+          0,
+          deleteSprite.width,
+          deleteSprite.height
+        );
+        deleteSprite.eventMode = "dynamic";
+        deleteSprite.on("pointerdown", (e) => {
+          conn.reducers.deleteDecor(decor.id);
+          e.stopPropagation();
+        });
 
-      spriteContainer.addChild(deleteSprite);
+        spriteContainer.addChild(deleteSprite);
+      }
 
       spriteContainer.x = decor.x - spriteContainer.width / 2;
       spriteContainer.y = decor.y - spriteContainer.height / 2;
 
       spriteContainer.eventMode = "static";
       spriteContainer.interactiveChildren = true;
-      spriteContainer.on("pointerleave", (e) => {
-        deleteSprite.visible = false;
-      });
+      if (deleteSprite) {
+        spriteContainer.on("pointerleave", (_e) => {
+          deleteSprite.visible = false;
+        });
+      }
 
       const position = new Position({
         x: spriteContainer.x,
@@ -494,7 +500,12 @@ export class DecorSpawnSystem extends SystemFactory<{
       });
 
       const cursor = cursorQuery(world)[0];
-      const onClick = (id: EntityId, sprite: PSprite, x: number, y: number) => {
+      const onClick = (
+        id: EntityId,
+        sprite: PSprite,
+        x: number,
+        _y: number
+      ) => {
         sprite.cursor = "grabbing";
         cursor.cursor.grabbedEvents.push({
           id,
@@ -505,7 +516,7 @@ export class DecorSpawnSystem extends SystemFactory<{
           }),
         });
 
-        deleteSprite.visible = false;
+        if (deleteSprite) deleteSprite.visible = false;
       };
 
       const decorComp = new DecorComponent({
@@ -553,11 +564,17 @@ export class InventoryEventSystem extends SystemFactory<{}>(
 
       poll(InventoryAdded).forEach(({ data }) => {
         inventory.inventory.push(data.inventory);
+        inventory.ui.update(inventory);
       });
 
       poll(InventoryDeleted).forEach(({ data }) => {
-        const index = inventory.inventory.indexOf(data.inventory);
-        inventory.inventory.splice(index);
+        const index = inventory.inventory.findIndex(
+          (it) => it.id === data.inventory.id
+        );
+        if (index >= 0) {
+          inventory.inventory.splice(index, 1);
+          inventory.ui.update(inventory);
+        }
       });
     },
   }

@@ -15,7 +15,7 @@ const MODIFY_ENERGY: u32 = 0; // 5;
 
 const INTERACTION_LIKE: &str = "LIKE";
 
-const DECOR_KEYS: [&str; 11] = [
+const DECOR_KEYS: [&str; 12] = [
     "heart_01",
     "eye_01",
     "cac_01",
@@ -27,6 +27,7 @@ const DECOR_KEYS: [&str; 11] = [
     "cat_01",
     "face_01",
     "leaf_01",
+    "shroom_01",
 ];
 
 #[table(name = user, public)]
