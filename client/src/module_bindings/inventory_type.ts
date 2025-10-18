@@ -29,7 +29,7 @@ import {
 
 export type Inventory = {
   id: bigint,
-  user: __Identity,
+  owner: __Identity,
   decorKey: string,
 };
 /**
@@ -44,7 +44,7 @@ export const Inventory = {
     return __AlgebraicTypeValue.Product({
       elements: [
         { name: "id", algebraicType: __AlgebraicTypeValue.U64},
-        { name: "user", algebraicType: __AlgebraicTypeValue.createIdentityType()},
+        { name: "owner", algebraicType: __AlgebraicTypeValue.createIdentityType()},
         { name: "decorKey", algebraicType: __AlgebraicTypeValue.String},
       ]
     });

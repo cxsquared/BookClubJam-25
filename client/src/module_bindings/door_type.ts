@@ -31,6 +31,7 @@ export type Door = {
   id: bigint,
   owner: __Identity,
   currentVisitor: __Identity,
+  number: number,
 };
 /**
  * An object for generated helper functions.
@@ -46,6 +47,7 @@ export const Door = {
         { name: "id", algebraicType: __AlgebraicTypeValue.U64},
         { name: "owner", algebraicType: __AlgebraicTypeValue.createIdentityType()},
         { name: "currentVisitor", algebraicType: __AlgebraicTypeValue.createIdentityType()},
+        { name: "number", algebraicType: __AlgebraicTypeValue.U8},
       ]
     });
   },

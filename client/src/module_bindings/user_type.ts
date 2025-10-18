@@ -31,6 +31,7 @@ export type User = {
   identity: __Identity,
   originalDoor: bigint | undefined,
   energy: number,
+  currentDoorNumber: number,
 };
 /**
  * An object for generated helper functions.
@@ -46,6 +47,7 @@ export const User = {
         { name: "identity", algebraicType: __AlgebraicTypeValue.createIdentityType()},
         { name: "originalDoor", algebraicType: __AlgebraicTypeValue.createOptionType(__AlgebraicTypeValue.U64)},
         { name: "energy", algebraicType: __AlgebraicTypeValue.U32},
+        { name: "currentDoorNumber", algebraicType: __AlgebraicTypeValue.U8},
       ]
     });
   },

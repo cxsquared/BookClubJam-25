@@ -1,5 +1,8 @@
 use spacetimedb::{
-    rand::{seq::SliceRandom, Rng},
+    rand::{
+        seq::{IteratorRandom, SliceRandom},
+        Rng,
+    },
     reducer, table, Identity, ReducerContext, Table, Timestamp,
 };
 use std::{cmp, collections::HashSet};
@@ -36,6 +39,7 @@ pub struct User {
     identity: Identity,
     original_door: Option<u64>,
     energy: u32,
+    current_door_number: u8,
 }
 
 #[table(name = door_visit)]
@@ -53,6 +57,7 @@ pub struct Door {
     owner: Identity,
     #[index(btree)]
     current_visitor: Identity,
+    number: u8,
 }
 
 #[table(name = decor, public)]
@@ -120,9 +125,10 @@ pub fn identity_connected(ctx: &ReducerContext) {
             identity: ctx.sender,
             original_door: None,
             energy: 100,
+            current_door_number: 1,
         });
 
-        let door = create_door_for_user(ctx, &user);
+        let door = create_door_for_user(ctx, 1, &user);
 
         ctx.db.user().identity().update(User {
             original_door: Some(door.id),
@@ -156,6 +162,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
             .map(|v| return v.door_id),
     );
     let visited_count = visited.iter().count();
+    let new_visited_count = <usize as TryInto<u8>>::try_into(visited_count).unwrap() + 1;
     let found_door: Door;
 
     // find a new door that isn't theirs and doesn't have a visitor
@@ -166,7 +173,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
         .current_visitor()
         .filter(Identity::ZERO)
         .filter(|d| d.owner != user.identity && !visited.contains(&d.id))
-        .next()
+        .choose(&mut ctx.rng())
     {
         let id = new_door.id;
         log::debug!("Visiting new door {id}");
@@ -175,7 +182,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
             ..new_door
         });
     } else {
-        found_door = create_door_for_user(ctx, &user);
+        found_door = create_door_for_user(ctx, new_visited_count, &user);
     }
 
     ctx.db.door_visit().insert(DoorVisit {
@@ -187,6 +194,7 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
     ctx.db.user().identity().update(User {
         energy: (user.energy + cmp::max(5, 50 - ((visited_count as u32) * 2)))
             .clamp(ENERGY_MIN, ENERGY_MAX),
+        current_door_number: new_visited_count,
         ..user
     });
 
@@ -423,12 +431,13 @@ fn check_has_enough_energy(user: &User, energy: u32) -> Result<(), String> {
     Ok(())
 }
 
-fn create_door_for_user(ctx: &ReducerContext, owner: &User) -> Door {
+fn create_door_for_user(ctx: &ReducerContext, door_number: u8, owner: &User) -> Door {
     log::debug!("Building new door to visit");
     let new_door = ctx.db.door().insert(Door {
         owner: owner.identity,
         id: 0,
         current_visitor: owner.identity,
+        number: door_number,
     });
 
     // build packages

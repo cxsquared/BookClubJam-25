@@ -58,9 +58,11 @@ const spacedbUri = "ws://localhost:3000";
 
 declare global {
   var editingText: boolean;
+  var currentDoorNumber: number;
 }
 
 globalThis.editingText = false;
+globalThis.currentDoorNumber = 0;
 
 (async () => {
   const app = new Application();

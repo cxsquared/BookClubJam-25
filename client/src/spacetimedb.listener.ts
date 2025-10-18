@@ -98,6 +98,8 @@ export class SpacetimeDBListener {
       }
 
       this.packageSub = newPackageSubscription;
+
+      globalThis.currentDoorNumber = _ctx.db.doorVisit.count();
     });
 
     // User
@@ -114,10 +116,12 @@ export class SpacetimeDBListener {
       );
 
     conn.db.user.onInsert((_ctx, row) => {
+      globalThis.currentDoorNumber = row.currentDoorNumber;
       this.userUpdated.push(row);
     });
 
     conn.db.user.onUpdate((_ctx, _oldRow, newRow) => {
+      globalThis.currentDoorNumber = newRow.currentDoorNumber;
       console.log(
         "user updated " + newRow.identity.toHexString().substring(0, 8)
       );
