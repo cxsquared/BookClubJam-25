@@ -134,6 +134,11 @@ pub fn identity_connected(ctx: &ReducerContext) {
             original_door: Some(door.id),
             ..user
         });
+
+        ctx.db.door_visit().insert(DoorVisit {
+            visitor: user.identity,
+            door_id: door.id,
+        });
     }
 }
 
