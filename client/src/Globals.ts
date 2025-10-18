@@ -34,3 +34,23 @@ export class AssetManager {
 export function isTextDecor(decorKey: string) {
   return decorKey.startsWith("board");
 }
+
+export function getDialogue(doorNumber: number): string[] {
+  switch (doorNumber) {
+    case 2:
+      return ["Uhh Mom didn't say anything about a second door?"];
+    case 3:
+      return ["I should go find mom", "...Only one way to go now..."];
+    case 10:
+      return ["Why do I keep moving forward..."];
+    case 17:
+      return ["What is this feeling?", "I feel...good?"];
+    case 18:
+      return ["Maybe I should stop here"];
+    case 19:
+      return ["What's the point ..."];
+    default:
+      return [];
+  }
+}
+10;

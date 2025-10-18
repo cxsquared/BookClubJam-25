@@ -6,6 +6,7 @@ import { Input, ProgressBar } from "@pixi/ui";
 import { Tween } from "@tweenjs/tween.js";
 import { GameEventMap } from "./events";
 import { InventoryUi } from "./ui/inventory.ui";
+import { TextBox } from "./ui/text-box.ui";
 
 export class Position extends Component("Position")<{
   x: number;
@@ -82,4 +83,8 @@ export class InventoryComponent extends Component("InventoryComponent")<{
 
 export class PackageComponent extends Component("PackageComponent")<{
   package: Package;
+}> {}
+
+export class TextComponent extends Component("TextComponent")<{
+  textBox: TextBox;
 }> {}

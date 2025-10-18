@@ -15,6 +15,7 @@ import {
   OpenDoorEvent,
   PackageAdded,
   PackageDeleted,
+  ShowText,
   UserEnergyChanged,
 } from "./events";
 import {
@@ -32,11 +33,18 @@ import {
   Position,
   PositionLimit,
   Sprite,
+  TextComponent,
   TweenComponent,
 } from "./components";
 import { DbConnection } from "./module_bindings";
 import { InputManager } from "./input_manager";
-import { APP_HEIGHT, APP_WIDTH, AssetManager, isTextDecor } from "./Globals";
+import {
+  APP_HEIGHT,
+  APP_WIDTH,
+  AssetManager,
+  getDialogue,
+  isTextDecor,
+} from "./Globals";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { Input } from "@pixi/ui";
 import { profanity } from "@2toad/profanity";
@@ -57,7 +65,8 @@ export type SystemTags =
   | "DecorEventSystem"
   | "InventoryEventSystem"
   | "PackageEventSystem"
-  | "TweenSystem";
+  | "TweenSystem"
+  | "DialogueController";
 
 const SystemFactory = System<SystemTags, GameEventMap>();
 
@@ -674,7 +683,12 @@ export class KeyInputSystem extends SystemFactory<{
   inputManager: InputManager;
 }>("KeyInput", {
   execute: ({ world, emit, input: { inputManager } }) => {
-    if (!globalThis.editingText && inputManager.isKeyPressed("Space")) {
+    var textBox = textBoxQuery(world)[0];
+    if (
+      !textBox.text.textBox.visible &&
+      !globalThis.editingText &&
+      inputManager.isKeyPressed("Space")
+    ) {
       const openDoor = openDoorQuery(world)[0];
       if (!openDoor.openController.isRunning) {
         emit({
@@ -809,6 +823,13 @@ export class OpenDoorSystem extends SystemFactory<{
           },
         });
 
+        emit({
+          type: ShowText,
+          data: {
+            texts: getDialogue(globalThis.currentDoorNumber),
+          },
+        });
+
         background.sprite.sprite.scale = 1;
 
         for (const decor of decorQuery(world)) {
@@ -887,5 +908,27 @@ export class TweenSystem extends SystemFactory<{}>("TweenSystem", {
         tween.justCompleted = false;
       }
     });
+  },
+}) {}
+
+var textBoxQuery = queryRequired({
+  text: TextComponent,
+});
+
+export class DialogueController extends SystemFactory<{
+  readonly inputManager: InputManager;
+}>("DialogueController", {
+  execute: ({ world, poll, input: { inputManager } }) => {
+    var textBox = textBoxQuery(world)[0];
+
+    if (textBox.text.textBox.visible && inputManager.isKeyPressed("Space")) {
+      textBox.text.textBox.continue();
+    }
+
+    poll(ShowText).forEach(({ data }) => {
+      textBox.text.textBox.showText(data.texts);
+    });
+
+    inputManager.tick();
   },
 }) {}

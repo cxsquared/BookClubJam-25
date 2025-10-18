@@ -26,6 +26,7 @@ export const InventoryDeleted = Symbol("InventoryDeleted");
 export const PackageAdded = Symbol("PackageAdded");
 export const PackageDeleted = Symbol("PackageDeleted");
 export const OpenDoorEvent = Symbol("OpenDoorEvent");
+export const ShowText = Symbol("ShowText");
 
 export interface GameEventMap extends EventMap {
   [DecorAdded]: { decor: Decor };
@@ -52,4 +53,5 @@ export interface GameEventMap extends EventMap {
   [PackageAdded]: { package: Package };
   [PackageDeleted]: { package: Package };
   [OpenDoorEvent]: {};
+  [ShowText]: { texts: string[] };
 }

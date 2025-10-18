@@ -4,6 +4,7 @@ import {
   CursorSystem,
   DecorEventSystem,
   DecorSpawnSystem,
+  DialogueController,
   EnergySystem,
   FadeSystem,
   InventoryEventSystem,
@@ -30,10 +31,11 @@ import {
   OpenDoorController,
   Position,
   Sprite,
+  TextComponent,
   TweenComponent,
 } from "./components";
 import { DbConnection, ErrorContext, Package } from "./module_bindings";
-import { Identity } from "spacetimedb";
+import { Identity, t } from "spacetimedb";
 import { InputManager } from "./input_manager";
 import { ProgressBar } from "@pixi/ui";
 import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
@@ -41,6 +43,7 @@ import { initDevtools } from "@pixi/devtools";
 import { Easing, Tween } from "@tweenjs/tween.js";
 import { SpacetimeDBListener } from "./spacetimedb.listener";
 import { InventoryUi } from "./ui/inventory.ui";
+import { TextBox } from "./ui/text-box.ui";
 
 export type AlphaTween = {
   alpha: number;
@@ -269,6 +272,25 @@ globalThis.currentDoorNumber = 0;
           })
         );
 
+        let textBox = new TextBox(container);
+        textBox.visible = false;
+        addComponent(
+          createEntity(),
+          new Position({
+            x: 0,
+            y: APP_HEIGHT - textBox.box_height - 25,
+            xOffset: 0,
+            yOffset: 0,
+            skew: 0,
+          }),
+          new Sprite({
+            sprite: textBox,
+          }),
+          new TextComponent({
+            textBox: textBox,
+          })
+        );
+
         addSystem(
           new TweenSystem(),
           new MouseInput(),
@@ -283,6 +305,9 @@ globalThis.currentDoorNumber = 0;
           new PositionLimiter(),
           new OpenDoorSystem({ conn }),
           new FadeSystem(),
+          new DialogueController({
+            inputManager: new InputManager(),
+          }),
           new RenderSystem()
         );
       }
