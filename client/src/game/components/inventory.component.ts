@@ -5,4 +5,5 @@ import { InventoryUi } from '../../ui/inventory.ui';
 export class InventoryComponent extends Component('InventoryComponent')<{
     inventory: Inventory[];
     ui: InventoryUi;
+    latestPackageXY: { x: number; y: number } | undefined;
 }> {}

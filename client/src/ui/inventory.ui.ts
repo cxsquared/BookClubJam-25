@@ -2,6 +2,7 @@ import { Assets, Container, Sprite } from 'pixi.js';
 import '@pixi/layout';
 import { InventoryComponent } from '../components';
 import { LayoutContainer, LayoutSprite, ScrollSpring } from '@pixi/layout/components';
+import { designConfig } from '../game/designConfig';
 
 const smallDecor = ['heart_01', 'eye_01', 'cac_01', 'star_01', 'paw_01', 'cat_01', 'face_01', 'leaf_01'];
 
@@ -136,6 +137,22 @@ export class InventoryUi extends Container {
             this.decorGrid[y][x] = sprite;
             y++;
         }
+    }
+
+    public getItemPosition(key: string): { x: number; y: number } {
+        const gridInfo = this.decorToGrid.get(key);
+
+        const defaultReturn = { x: this.width / 2, y: designConfig.content.height / 2 };
+
+        if (gridInfo === undefined) return defaultReturn;
+
+        const { x, y } = gridInfo;
+
+        const sprite = x !== undefined ? this.decorGrid[y][x] : this.decorGrid[y][0];
+
+        if (!sprite) return defaultReturn;
+
+        return { x: sprite.layout?.realX ?? defaultReturn.x, y: sprite.layout?.realY ?? defaultReturn.y };
     }
 
     public update(inventory: InventoryComponent) {

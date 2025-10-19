@@ -5,6 +5,6 @@ import { GameEventMap } from '../events';
 
 export class TweenComponent<T extends Record<string, any>> extends Component('TweenComponent')<{
     tween: Tween<T>;
-    justCompleted: boolean;
+    running: boolean;
     onComplete: undefined | ((_: SystemExecute<SystemTags, GameEventMap>) => void);
 }> {}

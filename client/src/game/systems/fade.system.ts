@@ -3,6 +3,7 @@ import { FadeComponent } from '../components/fade.component';
 import { TweenComponent } from '../components/tween.component';
 import { GameEventMap, FadeEvent } from '../events';
 import { SystemTags } from './systems-tags';
+import { tw } from '@pixi/layout/tailwind';
 
 const fadeQuery = queryRequired({
     fade: FadeComponent,
@@ -32,6 +33,8 @@ export class FadeSystem extends System<SystemTags, GameEventMap>()<{}>('FadeSyst
                     250,
                 );
             }
+
+            tween.running = true;
 
             tween.tween.startFromCurrentValues();
         });

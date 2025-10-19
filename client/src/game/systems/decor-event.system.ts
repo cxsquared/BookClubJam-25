@@ -44,7 +44,7 @@ export class DecorEventSystem extends System<SystemTags, GameEventMap>()<{}>('De
             const decor = decorQuery(world).find((d) => d.decor.decor.id === data.event.reducer.args.decorId);
 
             if (decor) {
-                decor.sprite.sprite.removeFromParent();
+                decor.sprite.sprite.destroy();
                 destroyEntity(decor.entityId);
             }
         });

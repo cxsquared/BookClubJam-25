@@ -15,6 +15,7 @@ import { MouseListener } from '../mouse.listener';
 import { SystemTags } from './systems-tags';
 import { Cursor } from '../components/cursor.component';
 import { DoorComponent } from '../components/door.component';
+import { AppScreen } from '../../navigation';
 
 const doorQuery = queryRequired({
     door: DoorComponent,
@@ -28,11 +29,11 @@ const cursorQuery = queryRequired({
 });
 
 export class DecorSpawnSystem extends System<SystemTags, GameEventMap>()<{
-    readonly ctx: Container;
+    readonly screen: AppScreen;
     readonly conn: DbConnection;
 }>('DecorSpawn', {
     dependencies: ['SpacetimeDBEventSystem'],
-    execute: ({ world, poll, createEntity, addComponent, getComponent, input: { ctx, conn } }) => {
+    execute: ({ world, poll, createEntity, addComponent, getComponent, input: { screen, conn } }) => {
         const { position: doorPosition, sprite: doorSprite } = doorQuery(world)[0];
 
         poll(DecorAdded).forEach((event) => {
@@ -47,7 +48,7 @@ export class DecorSpawnSystem extends System<SystemTags, GameEventMap>()<{
             let deleteOffsetX = 6;
             let delteOffsetY = 6;
 
-            ctx.addChild(spriteContainer);
+            screen.addChild(spriteContainer);
 
             let listener;
             const isText = isTextDecor(event.data.decor.key);

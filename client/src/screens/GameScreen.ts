@@ -10,12 +10,10 @@ import { DbConnection, ErrorContext } from '../module_bindings';
 import { SpacetimeDBListener } from '../spacetimedb.listener';
 import { InventoryUi } from '../ui/inventory.ui';
 import { TextBox } from '../ui/text-box.ui';
-import { ProgressBarUi } from '../ui/bar.ui';
 import { designConfig } from '../game/designConfig';
 import { BackgroundComponent } from '../game/components/background.component';
 import { Cursor } from '../game/components/cursor.component';
 import { DoorComponent } from '../game/components/door.component';
-import { EnergyComponent } from '../game/components/energy.component';
 import { FadeComponent } from '../game/components/fade.component';
 import { InventoryComponent } from '../game/components/inventory.component';
 import { MouseEvents } from '../game/components/mouse-events.component';
@@ -104,10 +102,6 @@ export class GameScreen extends Container implements AppScreen {
                 ui: inventoryUi,
             });
 
-            // Component usage
-            let progressBar = new ProgressBarUi();
-            this.addChild(progressBar);
-
             this.world = ECS.create<SystemTags, GameEventMap>(({ addComponent, createEntity, addSystem }) => {
                 addComponent(createEntity(), inventoryComp);
 
@@ -135,7 +129,7 @@ export class GameScreen extends Container implements AppScreen {
                     }),
                     new TweenComponent<PositionTween>({
                         tween: openTween,
-                        justCompleted: false,
+                        running: false,
                         onComplete: undefined,
                     }),
                 );
@@ -165,7 +159,7 @@ export class GameScreen extends Container implements AppScreen {
                     }),
                     new TweenComponent<AlphaTween>({
                         tween: fadeTween,
-                        justCompleted: false,
+                        running: false,
                         onComplete: undefined,
                     }),
                 );
@@ -183,7 +177,6 @@ export class GameScreen extends Container implements AppScreen {
                     new BackgroundComponent(),
                 );
 
-                addComponent(createEntity(), new EnergyComponent({ bar: progressBar }));
                 addComponent(
                     doorId,
                     new Position({
@@ -225,9 +218,9 @@ export class GameScreen extends Container implements AppScreen {
                     new MouseInput(),
                     new KeyInputSystem({ inputManager: new InputManager() }),
                     new SpacetimeDBEventSystem({ listener }),
-                    new DecorSpawnSystem({ ctx: this, conn }),
-                    new PackageEventSystem({ container: this, conn }),
-                    new InventoryEventSystem(),
+                    new DecorSpawnSystem({ screen: this, conn }),
+                    new PackageEventSystem({ screen: this, conn }),
+                    new InventoryEventSystem({ screen: this }),
                     new EnergySystem(),
                     new CursorSystem({ conn }),
                     new DecorEventSystem(),

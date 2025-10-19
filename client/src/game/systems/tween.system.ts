@@ -11,12 +11,10 @@ export class TweenSystem extends System<SystemTags, GameEventMap>()<{}>('TweenSy
     execute: (exe) => {
         const { world } = exe;
         tweenQuery(world).forEach(({ tween }) => {
-            tween.tween.update();
+            if (tween.running && !tween.tween.update()) {
+                tween.running = false;
 
-            if (tween.justCompleted) {
                 if (tween.onComplete) tween.onComplete(exe);
-
-                tween.justCompleted = false;
             }
         });
     },

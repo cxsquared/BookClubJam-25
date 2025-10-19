@@ -44,7 +44,7 @@ export interface GameEventMap extends EventMap {
     [InventoryAdded]: { inventory: Inventory };
     [InventoryDeleted]: { inventory: Inventory };
     [PackageAdded]: { package: Package };
-    [PackageDeleted]: { package: Package };
+    [PackageDeleted]: { package: Package; x: number; y: number };
     [OpenDoorEvent]: {};
     [ShowText]: { texts: string[] };
 }

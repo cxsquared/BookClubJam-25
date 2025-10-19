@@ -12,6 +12,7 @@ import { OpenDoorController } from '../components/open-door-controller.component
 import { TweenComponent } from '../components/tween.component';
 import { DecorComponent } from '../components/decor.component';
 import { DoorComponent } from '../components/door.component';
+import { tw } from '@pixi/layout/tailwind';
 
 const openYOffset = -350;
 const openXOffset = 400;
@@ -74,6 +75,7 @@ export class OpenDoorSystem extends System<SystemTags, GameEventMap>()<{
                     skew: 0,
                     bgScale: 1,
                 });
+                tween.running = false;
                 tween.tween.easing(Easing.Exponential.InOut);
                 openController.isRunning = false;
                 door.sprite.sprite.scale = 1;
@@ -99,7 +101,7 @@ export class OpenDoorSystem extends System<SystemTags, GameEventMap>()<{
                 background.sprite.sprite.scale = 1;
 
                 for (const decor of decorQuery(world)) {
-                    decor.sprite.sprite.removeFromParent();
+                    decor.sprite.sprite.destroy();
                     destroyEntity(decor.entityId);
                 }
             };
@@ -114,10 +116,9 @@ export class OpenDoorSystem extends System<SystemTags, GameEventMap>()<{
                     },
                     1000,
                 )
-                .onComplete(() => {
-                    tween.justCompleted = true;
-                })
                 .start();
+
+            tween.running = true;
 
             emit({
                 type: FadeEvent,
