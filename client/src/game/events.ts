@@ -1,7 +1,7 @@
 import { EntityId, EventMap } from '@typeonce/ecs';
-import { Decor, DeleteDecor, Door, Inventory, MoveDecor, Package } from './module_bindings';
 import { ReducerEvent } from 'spacetimedb';
-import { GrabbedComponent } from './game/components/grabbed.component';
+import { Decor, MoveDecor, DeleteDecor, Door, Inventory, Package } from '../module_bindings';
+import { GrabbedComponent } from './components/grabbed.component';
 
 export const DecorAdded = Symbol('DecorAdded');
 export const DecorUpdated = Symbol('DecorUpdated');

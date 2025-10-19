@@ -1,6 +1,6 @@
 import { Component, EntityId } from '@typeonce/ecs';
-import { MouseListener } from '../../systems';
 import { GrabbedComponent } from './grabbed.component';
+import { MouseListener } from '../mouse.listener';
 
 export class Cursor extends Component('Cursor')<{
     listener: MouseListener;

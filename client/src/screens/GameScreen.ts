@@ -4,31 +4,10 @@ import type { AppScreen } from '../navigation';
 import { Easing, Group, Tween } from '@tweenjs/tween.js';
 import { ECS, World } from '@typeonce/ecs';
 import { Identity } from 'spacetimedb';
-import { GameEventMap } from '../events';
-import { APP_WIDTH, APP_HEIGHT } from '../Globals';
 import { InputManager } from '../input_manager';
 import { PositionTween, AlphaTween } from '../main';
 import { DbConnection, ErrorContext } from '../module_bindings';
 import { SpacetimeDBListener } from '../spacetimedb.listener';
-import {
-    SystemTags,
-    MouseListener,
-    TweenSystem,
-    MouseInput,
-    KeyInputSystem,
-    SpacetimeDBEventSystem,
-    DecorSpawnSystem,
-    PackageEventSystem,
-    InventoryEventSystem,
-    EnergySystem,
-    CursorSystem,
-    DecorEventSystem,
-    PositionLimiter,
-    OpenDoorSystem,
-    FadeSystem,
-    DialogueController,
-    RenderSystem,
-} from '../systems';
 import { InventoryUi } from '../ui/inventory.ui';
 import { TextBox } from '../ui/text-box.ui';
 import { ProgressBarUi } from '../ui/bar.ui';
@@ -45,6 +24,24 @@ import { Position } from '../game/components/position.component';
 import { SpriteComponent } from '../game/components/sprite.component';
 import { TextComponent } from '../game/components/text.component';
 import { TweenComponent } from '../game/components/tween.component';
+import { MouseListener } from '../game/mouse.listener';
+import { CursorSystem } from '../game/systems/cursor.system';
+import { DecorEventSystem } from '../game/systems/decor-event.system';
+import { DecorSpawnSystem } from '../game/systems/decor.spawn.system';
+import { DialogueController } from '../game/systems/dialogue-controller.system';
+import { EnergySystem } from '../game/systems/energy.system';
+import { FadeSystem } from '../game/systems/fade.system';
+import { InventoryEventSystem } from '../game/systems/inventory-event.system';
+import { KeyInputSystem } from '../game/systems/key-input.system';
+import { MouseInput } from '../game/systems/mouse-input.system';
+import { OpenDoorSystem } from '../game/systems/open-door.system';
+import { PackageEventSystem } from '../game/systems/package-event.system';
+import { PositionLimiter } from '../game/systems/position-limiter.system';
+import { RenderSystem } from '../game/systems/render.system';
+import { SpacetimeDBEventSystem } from '../game/systems/spacetime-db-event.system';
+import { SystemTags } from '../game/systems/systems-tags';
+import { TweenSystem } from '../game/systems/tween.system';
+import { GameEventMap } from '../game/events';
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = 'ws://localhost:3000';
@@ -177,8 +174,8 @@ export class GameScreen extends Container implements AppScreen {
                     createEntity(),
                     new SpriteComponent({ sprite: this.background }),
                     new Position({
-                        x: APP_WIDTH / 2,
-                        y: APP_HEIGHT / 2,
+                        x: designConfig.content.width / 2,
+                        y: designConfig.content.height / 2,
                         xOffset: 0,
                         yOffset: 0,
                         skew: 0,
@@ -210,7 +207,7 @@ export class GameScreen extends Container implements AppScreen {
                     createEntity(),
                     new Position({
                         x: 0,
-                        y: APP_HEIGHT - textBox.box_height - 25,
+                        y: designConfig.content.height - textBox.box_height - 25,
                         xOffset: 0,
                         yOffset: 0,
                         skew: 0,

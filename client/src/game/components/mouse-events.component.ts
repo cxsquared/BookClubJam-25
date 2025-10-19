@@ -1,6 +1,6 @@
 import { Component, EntityId } from '@typeonce/ecs';
-import { MouseListener } from '../../systems';
 import { Sprite } from 'pixi.js';
+import { MouseListener } from '../mouse.listener';
 
 export class MouseEvents extends Component('MouseEvents')<{
     listener: MouseListener;

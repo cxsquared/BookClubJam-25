@@ -1,0 +1,16 @@
+export type SystemTags =
+    | 'Render'
+    | 'PositionLimit'
+    | 'DecorSpawn'
+    | 'SpacetimeDBEventSystem'
+    | 'MouseInput'
+    | 'KeyInput'
+    | 'EnergySystem'
+    | 'CursorSystem'
+    | 'OpenDoorSystem'
+    | 'FadeSystem'
+    | 'DecorEventSystem'
+    | 'InventoryEventSystem'
+    | 'PackageEventSystem'
+    | 'TweenSystem'
+    | 'DialogueController';

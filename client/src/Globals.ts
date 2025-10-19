@@ -1,6 +1,3 @@
-export const APP_WIDTH = 800;
-export const APP_HEIGHT = 600;
-
 export const DECOR_KEYS = [
     'heart_01',
     'eye_01',
@@ -43,4 +40,3 @@ export function getDialogue(doorNumber: number): string[] {
             return [];
     }
 }
-10;
