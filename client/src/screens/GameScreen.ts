@@ -4,20 +4,6 @@ import type { AppScreen } from '../navigation';
 import { Easing, Group, Tween } from '@tweenjs/tween.js';
 import { ECS, World } from '@typeonce/ecs';
 import { Identity } from 'spacetimedb';
-import {
-    InventoryComponent,
-    OpenDoorController,
-    TweenComponent,
-    Cursor,
-    Position,
-    FadeComponent,
-    BackgroundComponent,
-    EnergyComponent,
-    DoorComponent,
-    MouseEvents,
-    TextComponent,
-    SpriteComponent,
-} from '../components';
 import { GameEventMap } from '../events';
 import { APP_WIDTH, APP_HEIGHT } from '../Globals';
 import { InputManager } from '../input_manager';
@@ -47,6 +33,18 @@ import { InventoryUi } from '../ui/inventory.ui';
 import { TextBox } from '../ui/text-box.ui';
 import { ProgressBarUi } from '../ui/bar.ui';
 import { designConfig } from '../game/designConfig';
+import { BackgroundComponent } from '../game/components/background.component';
+import { Cursor } from '../game/components/cursor.component';
+import { DoorComponent } from '../game/components/door.component';
+import { EnergyComponent } from '../game/components/energy.component';
+import { FadeComponent } from '../game/components/fade.component';
+import { InventoryComponent } from '../game/components/inventory.component';
+import { MouseEvents } from '../game/components/mouse-events.component';
+import { OpenDoorController } from '../game/components/open-door-controller.component';
+import { Position } from '../game/components/position.component';
+import { SpriteComponent } from '../game/components/sprite.component';
+import { TextComponent } from '../game/components/text.component';
+import { TweenComponent } from '../game/components/tween.component';
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = 'ws://localhost:3000';

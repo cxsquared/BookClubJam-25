@@ -18,24 +18,6 @@ import {
     ShowText,
     UserEnergyChanged,
 } from './events';
-import {
-    BackgroundComponent,
-    Cursor,
-    DecorComponent,
-    DoorComponent,
-    EnergyComponent,
-    FadeComponent,
-    GrabbedComponent,
-    InventoryComponent,
-    MouseEvents,
-    OpenDoorController,
-    PackageComponent,
-    Position,
-    PositionLimit,
-    SpriteComponent,
-    TextComponent,
-    TweenComponent,
-} from './components';
 import { DbConnection } from './module_bindings';
 import { InputManager } from './input_manager';
 import { APP_HEIGHT, APP_WIDTH, getDialogue, isTextDecor } from './Globals';
@@ -44,6 +26,22 @@ import { Input } from '@pixi/ui';
 import { profanity } from '@2toad/profanity';
 import { SpacetimeDBListener } from './spacetimedb.listener';
 import { PositionTween } from './main';
+import { Position } from './game/components/position.component';
+import { SpriteComponent } from './game/components/sprite.component';
+import { BackgroundComponent } from './game/components/background.component';
+import { Cursor } from './game/components/cursor.component';
+import { DecorComponent } from './game/components/decor.component';
+import { DoorComponent } from './game/components/door.component';
+import { EnergyComponent } from './game/components/energy.component';
+import { FadeComponent } from './game/components/fade.component';
+import { GrabbedComponent } from './game/components/grabbed.component';
+import { InventoryComponent } from './game/components/inventory.component';
+import { MouseEvents } from './game/components/mouse-events.component';
+import { OpenDoorController } from './game/components/open-door-controller.component';
+import { PackageComponent } from './game/components/package.component';
+import { PositionLimit } from './game/components/position-limit.component';
+import { TextComponent } from './game/components/text.component';
+import { TweenComponent } from './game/components/tween.component';
 
 export type SystemTags =
     | 'Render'
