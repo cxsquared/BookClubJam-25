@@ -1,355 +1,123 @@
-import { ECS, World } from "@typeonce/ecs";
-import { Application, Container, Graphics, Sprite as PSprite } from "pixi.js";
-import {
-  CursorSystem,
-  DecorEventSystem,
-  DecorSpawnSystem,
-  DialogueController,
-  EnergySystem,
-  FadeSystem,
-  InventoryEventSystem,
-  KeyInputSystem,
-  MouseInput,
-  MouseListener,
-  OpenDoorSystem,
-  PackageEventSystem,
-  PositionLimiter,
-  RenderSystem,
-  SpacetimeDBEventSystem,
-  SystemTags,
-  TweenSystem,
-} from "./systems";
-import { GameEventMap } from "./events";
-import {
-  BackgroundComponent,
-  Cursor,
-  DoorComponent,
-  EnergyComponent,
-  FadeComponent,
-  InventoryComponent,
-  MouseEvents,
-  OpenDoorController,
-  Position,
-  Sprite,
-  TextComponent,
-  TweenComponent,
-} from "./components";
-import { DbConnection, ErrorContext, Package } from "./module_bindings";
-import { Identity, t } from "spacetimedb";
-import { InputManager } from "./input_manager";
-import { ProgressBar } from "@pixi/ui";
-import { APP_WIDTH, APP_HEIGHT, randomDecorKey, AssetManager } from "./Globals";
-import { initDevtools } from "@pixi/devtools";
-import { Easing, Tween } from "@tweenjs/tween.js";
-import { SpacetimeDBListener } from "./spacetimedb.listener";
-import { InventoryUi } from "./ui/inventory.ui";
-import { TextBox } from "./ui/text-box.ui";
+import { Application, Assets } from 'pixi.js';
+import { designConfig } from './game/designConfig';
+import { navigation } from './navigation';
+import { initAssets } from './assets';
+import { storage } from './storage';
+import { getUrlParam } from './utils/utils';
+import { GameScreen } from './screens/GameScreen';
+import { LoadScreen } from './screens/LoadScreen';
 
 export type AlphaTween = {
-  alpha: number;
+    alpha: number;
 };
 
 export type PositionTween = {
-  yOffset: number;
-  xOffset: number;
-  skew: number;
-  bgScale: number;
+    yOffset: number;
+    xOffset: number;
+    skew: number;
+    bgScale: number;
 };
 
-//"wss://space.codyclaborn.me"
-const spacedbUri = "ws://localhost:3000";
-
 declare global {
-  var editingText: boolean;
-  var currentDoorNumber: number;
+    var editingText: boolean;
+    var currentDoorNumber: number;
 }
 
 globalThis.editingText = false;
 globalThis.currentDoorNumber = 0;
 
-(async () => {
-  const app = new Application();
-  await app.init({
-    width: APP_WIDTH,
-    height: APP_HEIGHT,
-    backgroundColor: 0x222222,
-    antialias: false,
-    resolution: window.devicePixelRatio,
-  });
-  document.body.appendChild(app.canvas);
+/** The PixiJS app Application instance, shared across the project */
+export const app = new Application();
 
-  await AssetManager.load();
+let hasInteracted = false;
 
-  const container = new Container();
-  container.width = APP_WIDTH;
-  container.height = APP_HEIGHT;
+/** Set up a resize function for the app */
+function resize() {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const minWidth = designConfig.content.width;
+    const minHeight = designConfig.content.height;
 
-  container.eventMode = "static";
-  container.on("pointerdown", () => {});
+    // Calculate renderer and canvas sizes based on current dimensions
+    const scaleX = windowWidth < minWidth ? minWidth / windowWidth : 1;
+    const scaleY = windowHeight < minHeight ? minHeight / windowHeight : 1;
+    const scale = scaleX > scaleY ? scaleX : scaleY;
+    const width = windowWidth * scale;
+    const height = windowHeight * scale;
 
-  app.stage.addChild(container);
+    // Update canvas style dimensions and scroll window up to avoid issues on mobile resize
+    app.renderer.canvas.style.width = `${windowWidth}px`;
+    app.renderer.canvas.style.height = `${windowHeight}px`;
+    window.scrollTo(0, 0);
 
-  const fadeGraphic = new Graphics()
-    .rect(0, 0, APP_WIDTH, APP_HEIGHT)
-    .fill(0x00000000);
+    // Update renderer  and navigation screens dimensions
+    app.renderer.resize(width, height);
+    navigation.init();
+    navigation.resize(width, height);
+}
 
-  fadeGraphic.alpha = 0;
-  fadeGraphic.label = "fade";
-  fadeGraphic.interactive = false;
-  fadeGraphic.eventMode = "none";
-  fadeGraphic.zIndex = 100;
-
-  container.addChild(fadeGraphic);
-
-  let world: World<SystemTags, GameEventMap>;
-
-  const onConnect = (conn: DbConnection, identity: Identity, token: string) => {
-    localStorage.setItem("auth_token", token);
-    console.log(
-      "Connected to SpacetimeDB with identity:",
-      identity.toHexString()
-    );
-
-    const bgSprite = new PSprite(AssetManager.Assets.bg);
-    bgSprite.label = "background";
-    bgSprite.eventMode = "dynamic";
-    bgSprite.anchor = { x: 0.5, y: 0.5 };
-    container.addChild(bgSprite);
-
-    const listener = new SpacetimeDBListener(conn, identity);
-    const barArgs = {
-      fillColor: 0x22ffff,
-      borderColor: 0xffffff,
-      backgroundColor: 0x000000,
-      width: 450,
-      height: 35,
-      radius: 25,
-      border: 3,
-    };
-    const bg = new Graphics()
-      .roundRect(0, 0, barArgs.width, barArgs.height, barArgs.radius)
-      .fill(barArgs.borderColor)
-      .roundRect(
-        barArgs.border,
-        barArgs.border,
-        barArgs.width - barArgs.border * 2,
-        barArgs.height - barArgs.border * 2,
-        barArgs.radius
-      )
-      .fill(barArgs.backgroundColor);
-    const fill = new Graphics()
-      .roundRect(0, 0, barArgs.width, barArgs.height, barArgs.radius)
-      .fill(barArgs.borderColor)
-      .roundRect(
-        barArgs.border,
-        barArgs.border,
-        barArgs.width - barArgs.border * 2,
-        barArgs.height - barArgs.border * 2,
-        barArgs.radius
-      )
-      .fill(barArgs.fillColor);
-
-    const inventoryUi = new InventoryUi((key, x, y) => {
-      if (editingText) return;
-
-      const inventoryItem = inventoryComp.inventory.find(
-        (i) => i.decorKey === key
-      );
-
-      if (inventoryItem) {
-        conn.reducers.createDecor(inventoryItem.id, x, y);
-      }
-    });
-    container.addChild(inventoryUi);
-
-    const inventoryComp = new InventoryComponent({
-      inventory: [],
-      ui: inventoryUi,
+/** Setup app and initialise assets */
+async function init() {
+    // Initialize the app
+    await app.init({
+        resolution: Math.max(window.devicePixelRatio, 2),
+        backgroundColor: 0xffffff,
     });
 
-    // Component usage
-    let progressBar = new ProgressBar({
-      bg,
-      fill,
-      progress: 0,
+    // Add pixi canvas element to the document's body
+    document.body.appendChild(app.canvas);
+
+    // Whenever the window resizes, call the 'resize' function
+    window.addEventListener('resize', resize);
+
+    // Trigger the first resize
+    resize();
+
+    // Setup assets bundles (see assets.ts) and start up loading everything in background
+    await initAssets();
+
+    // Set the default local storage data if needed
+    storage.readyStorage();
+
+    // Assign the universal loading screen
+    navigation.setLoadScreen(LoadScreen);
+
+    // Change the audio mute state to the stored state
+    //audio.muted(storage.getStorageItem('muted'));
+
+    // Prepare for user interaction, and play the music on event
+    document.addEventListener('pointerdown', () => {
+        if (!hasInteracted) {
+            // Only play audio if it hasn't already been played
+            //bgm.play('audio/bubbo-bubbo-bg-music.wav');
+        }
+
+        hasInteracted = true;
     });
-    progressBar.x = APP_WIDTH - progressBar.height - 25;
-    progressBar.y = 520;
-    progressBar.rotation = -Math.PI / 2;
 
-    container.addChild(progressBar);
-    world = ECS.create<SystemTags, GameEventMap>(
-      ({ addComponent, createEntity, addSystem }) => {
-        addComponent(createEntity(), inventoryComp);
+    // Check for visibility sate so we can mute the audio on "hidden"
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') {
+            // Always mute on hidden
+            //audio.muted(true);
+        } else {
+            // Only unmute if it was previously unmuted
+            //audio.muted(storage.getStorageItem('muted'));
+        }
+    });
 
-        const doorId = createEntity();
-        const door = new PSprite(AssetManager.Assets.door);
-        door.anchor.set(0, 0);
-        door.eventMode = "dynamic";
-        door.x = 296;
-        door.y = 44;
-        door.label = "door";
-        container.addChild(door);
-
-        const openTween = new Tween<PositionTween>({
-          yOffset: 0,
-          xOffset: 0,
-          skew: 0,
-          bgScale: 1,
-        });
-        openTween.easing(Easing.Exponential.InOut);
-
-        addComponent(
-          createEntity(),
-          new OpenDoorController({
-            isRunning: false,
-          }),
-          new TweenComponent<PositionTween>({
-            tween: openTween,
-            justCompleted: false,
-            onComplete: undefined,
-          })
-        );
-
-        const mListener = new MouseListener(door, doorId);
-
-        addComponent(
-          createEntity(),
-          new Cursor({
-            listener: mListener,
-            grabbedEvents: [],
-          }),
-          new Position({ x: 0, y: 0, yOffset: 0, xOffset: 0, skew: 0 })
-        );
-
-        const fadeTween = new Tween<AlphaTween>({
-          alpha: 0,
-        });
-        fadeTween.onUpdate(({ alpha }) => {
-          fadeGraphic.alpha = alpha;
-        });
-
-        addComponent(
-          createEntity(),
-          new FadeComponent({
-            graphic: fadeGraphic,
-          }),
-          new TweenComponent<AlphaTween>({
-            tween: fadeTween,
-            justCompleted: false,
-            onComplete: undefined,
-          })
-        );
-
-        addComponent(
-          createEntity(),
-          new Sprite({ sprite: bgSprite }),
-          new Position({
-            x: APP_WIDTH / 2,
-            y: APP_HEIGHT / 2,
-            xOffset: 0,
-            yOffset: 0,
-            skew: 0,
-          }),
-          new BackgroundComponent()
-        );
-
-        addComponent(createEntity(), new EnergyComponent({ bar: progressBar }));
-        addComponent(
-          doorId,
-          new Position({
-            x: door.x,
-            y: door.y,
-            yOffset: 0,
-            xOffset: 0,
-            skew: 0,
-          }),
-          new Sprite({ sprite: door }),
-          new DoorComponent(),
-          new MouseEvents({
-            listener: mListener,
-            onClick: (_id, _sprite, x, y) => {},
-          })
-        );
-
-        let textBox = new TextBox(container);
-        textBox.visible = false;
-        addComponent(
-          createEntity(),
-          new Position({
-            x: 0,
-            y: APP_HEIGHT - textBox.box_height - 25,
-            xOffset: 0,
-            yOffset: 0,
-            skew: 0,
-          }),
-          new Sprite({
-            sprite: textBox,
-          }),
-          new TextComponent({
-            textBox: textBox,
-          })
-        );
-
-        addSystem(
-          new TweenSystem(),
-          new MouseInput(),
-          new KeyInputSystem({ inputManager: new InputManager() }),
-          new SpacetimeDBEventSystem({ listener }),
-          new DecorSpawnSystem({ ctx: container, conn }),
-          new PackageEventSystem({ container, conn }),
-          new InventoryEventSystem(),
-          new EnergySystem(),
-          new CursorSystem({ conn }),
-          new DecorEventSystem(),
-          new PositionLimiter(),
-          new OpenDoorSystem({ conn }),
-          new FadeSystem(),
-          new DialogueController({
-            inputManager: new InputManager(),
-          }),
-          new RenderSystem()
-        );
-      }
-    );
-  };
-
-  const onDisconnect = () => {
-    console.log("Disconnected from SpacetimeDB");
-  };
-
-  const onConnectError = (_ctx: ErrorContext, err: Error) => {
-    if (err.message.includes("Failed to verify token")) {
-      console.log("Auth token is bad. Clearing out and retrying");
-      localStorage.removeItem("auth_token");
-      connectionBuilder
-        .withUri(spacedbUri)
-        .withModuleName("bookclubjam-25")
-        .withToken(localStorage.getItem("auth_token") || undefined)
-        .onConnect(onConnect)
-        .onDisconnect(onDisconnect)
-        .onConnectError(onConnectError)
-        .build();
-
-      return;
+    // Show first screen - go straight to game if '?play' param is present in url
+    // This is used for debugging
+    if (getUrlParam('play') !== null) {
+        await Assets.loadBundle(GameScreen.assetBundles);
+        await navigation.goToScreen(GameScreen);
+    } else if (getUrlParam('loading') !== null) {
+        await navigation.goToScreen(LoadScreen);
+    } else {
+        //await navigation.goToScreen(TitleScreen);
+        await navigation.goToScreen(GameScreen);
     }
+}
 
-    console.log("Error connecting to SpacetimeDB:", err);
-  };
-
-  const connectionBuilder = DbConnection.builder();
-  connectionBuilder
-    .withUri(spacedbUri)
-    .withModuleName("bookclubjam-25")
-    .withToken(localStorage.getItem("auth_token") || undefined)
-    .onConnect(onConnect)
-    .onDisconnect(onDisconnect)
-    .onConnectError(onConnectError)
-    .build();
-
-  initDevtools({ app });
-
-  app.ticker.add(({ deltaTime }) => {
-    if (world) world.update(deltaTime);
-  });
-})();
+// Init everything
+init();

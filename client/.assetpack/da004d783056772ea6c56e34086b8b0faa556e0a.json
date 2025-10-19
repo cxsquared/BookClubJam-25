@@ -6,8 +6,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1760903528939,
-                "duration": 2.4544999999925494,
+                "date": 1760903542864,
+                "duration": 12.702599999999961,
                 "success": true
             }
         },
@@ -21,8 +21,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1760903528939,
-                "duration": 3.0569000000250526,
+                "date": 1760903542865,
+                "duration": 15.12869999999998,
                 "success": true
             }
         },
@@ -36,8 +36,8 @@
             "inheritedMetaData": {},
             "transformData": {},
             "stats": {
-                "date": 1760903528940,
-                "duration": 451.9295000000275,
+                "date": 1760903542875,
+                "duration": 447.40819999999997,
                 "success": true
             }
         },
@@ -264,21 +264,9 @@
             },
             "transformData": {}
         },
-        ".assetpack/cache-buster/preload-RWQp@0.5x.png": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload@0.5x.png": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/preload@0.5x.png",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true,
-                "mIgnore": true,
-                "nomip": true
-            },
-            "transformData": {}
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-RWQp@0.5x.png": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-RWQp@0.5x.png",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -300,21 +288,9 @@
             },
             "transformData": {}
         },
-        ".assetpack/cache-buster/preload-_WT15w@0.5x.webp": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload@0.5x.webp": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/preload@0.5x.webp",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true,
-                "mIgnore": true,
-                "nomip": true
-            },
-            "transformData": {}
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-_WT15w@0.5x.webp": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-_WT15w@0.5x.webp",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -360,21 +336,9 @@
                 "page": 0
             }
         },
-        ".assetpack/cache-buster/preload-9diXnw@0.5x.png.json": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload@0.5x.png.json": {
             "isFolder": false,
             "transformParent": ".assetpack/json/preload@0.5x.png.json",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {
-                "page": 0
-            }
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-MEsOCA@0.5x.png.json": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-9diXnw@0.5x.png.json",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -408,21 +372,9 @@
                 "page": 0
             }
         },
-        ".assetpack/cache-buster/preload-5w6vIg@0.5x.webp.json": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload@0.5x.webp.json": {
             "isFolder": false,
             "transformParent": ".assetpack/json/preload@0.5x.webp.json",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {
-                "page": 0
-            }
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-Tm3K2w@0.5x.webp.json": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-5w6vIg@0.5x.webp.json",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -457,21 +409,9 @@
             },
             "transformData": {}
         },
-        ".assetpack/cache-buster/preload-bNiq6w.png": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload.png": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/preload.png",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true,
-                "mIgnore": true,
-                "nomip": true
-            },
-            "transformData": {}
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-bNiq6w.png": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-bNiq6w.png",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -493,21 +433,9 @@
             },
             "transformData": {}
         },
-        ".assetpack/cache-buster/preload-GLF3UQ.webp": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload.webp": {
             "isFolder": false,
             "transformParent": ".assetpack/compress/preload.webp",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true,
-                "mIgnore": true,
-                "nomip": true
-            },
-            "transformData": {}
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-GLF3UQ.webp": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-GLF3UQ.webp",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -553,21 +481,9 @@
                 "page": 0
             }
         },
-        ".assetpack/cache-buster/preload-ekK3ww.png.json": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload.png.json": {
             "isFolder": false,
             "transformParent": ".assetpack/json/preload.png.json",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {
-                "page": 0
-            }
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-1c9f8w.png.json": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-ekK3ww.png.json",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
@@ -601,21 +517,9 @@
                 "page": 0
             }
         },
-        ".assetpack/cache-buster/preload-RNfuYA.webp.json": {
+        "C:/dev/spacetimedb/bookclubjam-25/client/public/assets/preload.webp.json": {
             "isFolder": false,
             "transformParent": ".assetpack/json/preload.webp.json",
-            "metaData": {},
-            "inheritedMetaData": {
-                "m": true,
-                "tps": true
-            },
-            "transformData": {
-                "page": 0
-            }
-        },
-        "C:/dev/spacetimedb/bookclubjam-25/client/public/preload-Ekl27g.webp.json": {
-            "isFolder": false,
-            "transformParent": ".assetpack/cache-buster/preload-RNfuYA.webp.json",
             "metaData": {},
             "inheritedMetaData": {
                 "m": true,
