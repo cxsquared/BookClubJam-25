@@ -1,8 +1,8 @@
 import { Assets, Container, Sprite } from 'pixi.js';
 import '@pixi/layout';
-import { InventoryComponent } from '../components';
 import { LayoutContainer, LayoutSprite, ScrollSpring } from '@pixi/layout/components';
 import { designConfig } from '../game/designConfig';
+import { InventoryComponent } from '../game/components/inventory.component';
 
 const smallDecor = ['heart_01', 'eye_01', 'cac_01', 'star_01', 'paw_01', 'cat_01', 'face_01', 'leaf_01'];
 
