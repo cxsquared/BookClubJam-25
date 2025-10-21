@@ -36,6 +36,9 @@ importers:
       '@assetpack/core':
         specifier: ^1.5.3
         version: 1.5.3
+      '@kayahr/aseprite':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.46.1
         version: 8.46.1(@typescript-eslint/parser@8.46.1(eslint@9.38.0)(typescript@5.9.3))(eslint@9.38.0)(typescript@5.9.3)
@@ -706,6 +709,9 @@ packages:
   '@jimp/utils@1.6.0':
     resolution: {integrity: sha512-gqFTGEosKbOkYF/WFj26jMHOI5OH2jeP1MmC/zbK6BF6VJBf8rIC5898dPfSzZEbSA0wbbV5slbntWVc5PKLFA==}
     engines: {node: '>=18'}
+
+  '@kayahr/aseprite@2.0.0':
+    resolution: {integrity: sha512-wcsKiMTku7r9MOriP2R5Y0Y3kCeYyLFLNBtqRPIZ3w+9jygwosU+hIRGHn58FvQQu+7eJanHoTLmOKb0WgKshA==}
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -3298,6 +3304,8 @@ snapshots:
     dependencies:
       '@jimp/types': 1.6.0
       tinycolor2: 1.6.0
+
+  '@kayahr/aseprite@2.0.0': {}
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:

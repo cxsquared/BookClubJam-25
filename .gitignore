@@ -242,3 +242,7 @@ new.json
 .ok.sql
 
 client/public
+
+# Project specific
+public/assets
+.assetpack

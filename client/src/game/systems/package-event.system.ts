@@ -1,5 +1,4 @@
 import { query, queryRequired, System } from '@typeonce/ecs';
-import { Sprite } from 'pixi.js';
 import { DbConnection } from '../../module_bindings';
 import { MouseEvents } from '../components/mouse-events.component';
 import { PackageComponent } from '../components/package.component';
@@ -11,6 +10,7 @@ import { SystemTags } from './systems-tags';
 import { designConfig } from '../designConfig';
 import { AppScreen } from '../../navigation';
 import { InventoryComponent } from '../components/inventory.component';
+import { AsepriteAsset } from '../../utils/asesprite.loader';
 
 const packageQuery = query({
     package: PackageComponent,
@@ -24,10 +24,20 @@ const inventoryQuery = queryRequired({
 
 export class PackageEventSystem extends System<SystemTags, GameEventMap>()<{
     screen: AppScreen;
+    packageAsset: AsepriteAsset;
     conn: DbConnection;
 }>('PackageEventSystem', {
-    dependencies: ['SpacetimeDBEventSystem'],
-    execute: ({ world, poll, createEntity, addComponent, getComponent, destroyEntity, input: { screen, conn } }) => {
+    dependencies: ['SpacetimeDBEventSystem', 'OpenDoorSystem'],
+    execute: ({
+        world,
+        poll,
+        createEntity,
+        addComponent,
+        removeComponent,
+        getComponent,
+        destroyEntity,
+        input: { screen, conn, packageAsset },
+    }) => {
         const existingPackages = packageQuery(world);
         const { inventory } = inventoryQuery(world)[0];
 
@@ -36,16 +46,30 @@ export class PackageEventSystem extends System<SystemTags, GameEventMap>()<{
 
             if (packageToDelete) {
                 inventory.latestPackageXY = { x: packageToDelete.position.x, y: packageToDelete.position.y };
-                destroyEntity(packageToDelete.entityId);
-
                 packageToDelete.sprite.sprite.destroy();
+
+                removeComponent(packageToDelete.entityId, MouseEvents);
+
+                const openSprite = packageAsset.createAnimatedSprite('open');
+                openSprite.play();
+                openSprite.onComplete = () => {
+                    openSprite.destroy();
+                    destroyEntity(packageToDelete.entityId);
+                };
+                openSprite.x = packageToDelete.position.x;
+                openSprite.y = packageToDelete.position.y;
+                screen.addChild(openSprite);
+
+                packageToDelete.sprite.sprite = openSprite;
             }
         });
 
-        poll(PackageAdded).forEach(({ data }) => {
+        poll(PackageAdded).forEach(async ({ data }) => {
             const entityId = createEntity();
 
-            const sprite = Sprite.from('package');
+            const sprite = packageAsset.createAnimatedSprite('idle');
+            sprite.play();
+
             sprite.label = `package:${data.package.id}`;
             sprite.interactive = true;
 

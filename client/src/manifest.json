@@ -5,8 +5,40 @@
       "assets": []
     },
     {
-      "name": "game_screen",
-      "assets": []
+      "name": "game-screen",
+      "assets": [
+        {
+          "alias": [
+            "game-screen/package_aseprite.json",
+            "package_aseprite.json"
+          ],
+          "src": [
+            "game-screen/package_aseprite-WYZm.json"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        },
+        {
+          "alias": [
+            "game-screen/package_spritesheet.png",
+            "package_spritesheet.png"
+          ],
+          "src": [
+            "game-screen/package_spritesheet-Tz8-vg.png",
+            "game-screen/package_spritesheet-P0feUw.webp",
+            "game-screen/package_spritesheet-mJaxMw@0.5x.webp",
+            "game-screen/package_spritesheet-HrADfA@0.5x.png"
+          ],
+          "data": {
+            "tags": {
+              "m": true
+            }
+          }
+        }
+      ]
     },
     {
       "name": "preload",
@@ -16,10 +48,10 @@
             "preload"
           ],
           "src": [
-            "preload@0.5x.webp.json",
-            "preload@0.5x.png.json",
-            "preload.webp.json",
-            "preload.png.json"
+            "preload-i0LDwA@0.5x.webp.json",
+            "preload-hpeBeA.png.json",
+            "preload-aHB0mA.webp.json",
+            "preload-13wzFw@0.5x.png.json"
           ],
           "data": {
             "tags": {

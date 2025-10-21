@@ -12,11 +12,17 @@ import { OpenDoorController } from '../components/open-door-controller.component
 import { TweenComponent } from '../components/tween.component';
 import { DecorComponent } from '../components/decor.component';
 import { DoorComponent } from '../components/door.component';
-import { tw } from '@pixi/layout/tailwind';
+import { PackageComponent } from '../components/package.component';
 
 const openYOffset = -350;
 const openXOffset = 400;
 const openYSkew = -1.4;
+
+const packageQuery = query({
+    package: PackageComponent,
+    sprite: SpriteComponent,
+    position: Position,
+});
 
 const openDoorQuery = queryRequired({
     openController: OpenDoorController,
@@ -68,7 +74,12 @@ export class OpenDoorSystem extends System<SystemTags, GameEventMap>()<{
                 });
             });
 
-            tween.onComplete = ({ emit, destroyEntity }) => {
+            tween.onComplete = ({ world, emit, destroyEntity }) => {
+                packageQuery(world).forEach((p) => {
+                    p.sprite.sprite.destroy();
+                    destroyEntity(p.entityId);
+                });
+
                 tween.tween = new Tween({
                     xOffset: 0,
                     yOffset: 0,

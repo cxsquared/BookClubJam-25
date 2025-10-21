@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Ticker } from 'pixi.js';
+import { Assets, Container, Graphics, Sprite, Ticker } from 'pixi.js';
 
 import type { AppScreen } from '../navigation';
 import { Easing, Group, Tween } from '@tweenjs/tween.js';
@@ -99,6 +99,7 @@ export class GameScreen extends Container implements AppScreen {
 
             const inventoryComp = new InventoryComponent({
                 inventory: [],
+                latestPackageXY: undefined,
                 ui: inventoryUi,
             });
 
@@ -213,13 +214,17 @@ export class GameScreen extends Container implements AppScreen {
                     }),
                 );
 
+                if (!globalThis.packageAsset) {
+                    throw new Error('please load package asset');
+                }
+
                 addSystem(
                     new TweenSystem(),
                     new MouseInput(),
                     new KeyInputSystem({ inputManager: new InputManager() }),
                     new SpacetimeDBEventSystem({ listener }),
                     new DecorSpawnSystem({ screen: this, conn }),
-                    new PackageEventSystem({ screen: this, conn }),
+                    new PackageEventSystem({ screen: this, conn, packageAsset: globalThis.packageAsset }),
                     new InventoryEventSystem({ screen: this }),
                     new EnergySystem(),
                     new CursorSystem({ conn }),

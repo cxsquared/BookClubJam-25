@@ -6,6 +6,7 @@ import { storage } from './storage';
 import { getUrlParam } from './utils/utils';
 import { GameScreen } from './screens/GameScreen';
 import { LoadScreen } from './screens/LoadScreen';
+import { AsepriteAsset } from './utils/asesprite.loader';
 
 export type AlphaTween = {
     alpha: number;
@@ -21,10 +22,12 @@ export type PositionTween = {
 declare global {
     var editingText: boolean;
     var currentDoorNumber: number;
+    var packageAsset: AsepriteAsset | undefined;
 }
 
 globalThis.editingText = false;
 globalThis.currentDoorNumber = 0;
+globalThis.packageAsset = undefined;
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application();
@@ -42,12 +45,12 @@ function resize() {
     const scaleX = windowWidth < minWidth ? minWidth / windowWidth : 1;
     const scaleY = windowHeight < minHeight ? minHeight / windowHeight : 1;
     const scale = scaleX > scaleY ? scaleX : scaleY;
-    const width = windowWidth * scale;
-    const height = windowHeight * scale;
+    const width = minWidth * scale;
+    const height = minHeight * scale;
 
     // Update canvas style dimensions and scroll window up to avoid issues on mobile resize
-    app.renderer.canvas.style.width = `${windowWidth}px`;
-    app.renderer.canvas.style.height = `${windowHeight}px`;
+    app.renderer.canvas.style.width = `${width}px`;
+    app.renderer.canvas.style.height = `${height}px`;
     window.scrollTo(0, 0);
 
     // Update renderer  and navigation screens dimensions
@@ -61,7 +64,10 @@ async function init() {
     // Initialize the app
     await app.init({
         resolution: Math.max(window.devicePixelRatio, 2),
-        backgroundColor: 0xffffff,
+        backgroundColor: 0x111111,
+        width: designConfig.content.width,
+        height: designConfig.content.height,
+        antialias: false,
     });
 
     // Add pixi canvas element to the document's body
@@ -75,6 +81,8 @@ async function init() {
 
     // Setup assets bundles (see assets.ts) and start up loading everything in background
     await initAssets();
+
+    globalThis.packageAsset = await Assets.load(`${GameScreen.assetBundles}/package_aseprite.json`);
 
     // Set the default local storage data if needed
     storage.readyStorage();

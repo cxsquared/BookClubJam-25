@@ -9,6 +9,7 @@ import {
 } from 'pixi.js';
 
 import manifest from '../src/manifest.json';
+import { initAsepriteLoader } from './utils/asesprite.loader';
 
 export const resolveJsonUrl = {
     extension: ExtensionType.ResolveParser,
@@ -20,6 +21,8 @@ extensions.add(resolveJsonUrl);
 
 /** Initialize and start background loading of all assets */
 export async function initAssets() {
+    initAsepriteLoader();
+
     // Init PixiJS assets with this asset manifest
     await Assets.init({ manifest, basePath: 'assets' });
 
