@@ -19,7 +19,7 @@ let first = true;
 export class InventoryEventSystem extends System<SystemTags, GameEventMap>()<{
     screen: AppScreen;
 }>('InventoryEventSystem', {
-    dependencies: ['SpacetimeDBEventSystem', 'PackageEventSystem'],
+    dependencies: ['SpacetimeDBEventSystem', 'PackageEventSystem', 'DecorEventSystem'],
     execute: ({ world, poll, addComponent, createEntity, input: { screen } }) => {
         const { inventory } = inventoryQuery(world)[0];
 
@@ -29,23 +29,24 @@ export class InventoryEventSystem extends System<SystemTags, GameEventMap>()<{
         let addedInventory = false;
         poll(InventoryAdded).forEach(({ data }) => {
             addedInventory = true;
-            inventory.inventory.push(data.inventory);
-            inventory.ui.update(inventory);
 
             if (first) {
+                inventory.inventory.push(data.inventory);
+                inventory.ui.update(inventory);
+
                 return;
             }
 
             const s = Sprite.from(data.inventory.decorKey);
-            s.x = x + s.width / 2;
-            s.y = y + s.height / 2;
+            s.x = x + s.width / 2 + (Math.random() - 0.5) * 20;
+            s.y = y + s.height / 2 + 10 + Math.random() * 20;
             screen.addChild(s);
 
             const targetXY = inventory.ui.getItemPosition(data.inventory.decorKey);
             const position = new Position({ x, y, xOffset: 0, yOffset: 0, skew: 0 });
 
             targetXY.x += 40;
-            targetXY.y += 45;
+            targetXY.y += 40;
 
             const tween = new Tween({ x, y })
                 .to(targetXY, 400)
@@ -53,7 +54,7 @@ export class InventoryEventSystem extends System<SystemTags, GameEventMap>()<{
                     position.x = x;
                     position.y = y;
                 })
-                .easing(Easing.Exponential.Out)
+                .easing(Easing.Exponential.In)
                 .start();
 
             const id = createEntity();
@@ -66,6 +67,9 @@ export class InventoryEventSystem extends System<SystemTags, GameEventMap>()<{
                     tween,
                     running: true,
                     onComplete: ({ getComponent, destroyEntity }) => {
+                        inventory.inventory.push(data.inventory);
+                        inventory.ui.update(inventory);
+
                         const sprite = getComponent({
                             sprite: SpriteComponent,
                         })(id);

@@ -6,7 +6,7 @@ import { storage } from './storage';
 import { getUrlParam } from './utils/utils';
 import { GameScreen } from './screens/GameScreen';
 import { LoadScreen } from './screens/LoadScreen';
-import { AsepriteAsset } from './utils/asesprite.loader';
+import { TitleScreen } from './screens/TitleScreen';
 
 export type AlphaTween = {
     alpha: number;
@@ -22,12 +22,10 @@ export type PositionTween = {
 declare global {
     var editingText: boolean;
     var currentDoorNumber: number;
-    var packageAsset: AsepriteAsset | undefined;
 }
 
 globalThis.editingText = false;
 globalThis.currentDoorNumber = 0;
-globalThis.packageAsset = undefined;
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application();
@@ -82,8 +80,6 @@ async function init() {
     // Setup assets bundles (see assets.ts) and start up loading everything in background
     await initAssets();
 
-    globalThis.packageAsset = await Assets.load(`${GameScreen.assetBundles}/package_aseprite.json`);
-
     // Set the default local storage data if needed
     storage.readyStorage();
 
@@ -122,8 +118,8 @@ async function init() {
     } else if (getUrlParam('loading') !== null) {
         await navigation.goToScreen(LoadScreen);
     } else {
-        //await navigation.goToScreen(TitleScreen);
-        await navigation.goToScreen(GameScreen);
+        await navigation.goToScreen(TitleScreen);
+        //await navigation.goToScreen(GameScreen);
     }
 }
 

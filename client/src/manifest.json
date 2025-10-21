@@ -61,6 +61,28 @@
           }
         }
       ]
+    },
+    {
+      "name": "title-screen",
+      "assets": [
+        {
+          "alias": [
+            "title-screen"
+          ],
+          "src": [
+            "title-screen-OrVNWw.webp.json",
+            "title-screen-l-_GEA@0.5x.png.json",
+            "title-screen-KIsDTA.png.json",
+            "title-screen-6X4MZA@0.5x.webp.json"
+          ],
+          "data": {
+            "tags": {
+              "m": true,
+              "tps": true
+            }
+          }
+        }
+      ]
     }
   ]
 }
