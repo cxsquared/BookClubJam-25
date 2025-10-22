@@ -186,6 +186,12 @@ pub fn enter_door(ctx: &ReducerContext) -> Result<(), String> {
             current_visitor: user.identity,
             ..new_door
         });
+
+        let package_count = ctx.db.package().door_id().filter(found_door.id).count();
+
+        if package_count <= 0 {
+            add_packages(&ctx, found_door.id);
+        }
     } else {
         found_door = create_door_for_user(ctx, new_visited_count, &user);
     }
@@ -446,6 +452,12 @@ fn create_door_for_user(ctx: &ReducerContext, door_number: u8, owner: &User) -> 
     });
 
     // build packages
+    add_packages(&ctx, new_door.id);
+
+    return new_door;
+}
+
+fn add_packages(ctx: &ReducerContext, door_id: u64) {
     let number_of_packages = ctx.rng().gen_range(1..3);
 
     log::info!("building {number_of_packages} packages for door");
@@ -453,7 +465,7 @@ fn create_door_for_user(ctx: &ReducerContext, door_number: u8, owner: &User) -> 
     for _pn in 0..number_of_packages {
         let new_package = ctx.db.package().insert(Package {
             id: 0,
-            door_id: new_door.id,
+            door_id: door_id,
         });
 
         let number_of_decor = ctx.rng().gen_range(3..6);
@@ -475,8 +487,6 @@ fn create_door_for_user(ctx: &ReducerContext, door_number: u8, owner: &User) -> 
             }
         }
     }
-
-    return new_door;
 }
 
 fn random_decor_key(ctx: &ReducerContext) -> Result<String, String> {
