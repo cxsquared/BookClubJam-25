@@ -104,6 +104,8 @@ export class PackageEventSystem extends System<SystemTags, GameEventMap>()<{
                     position.y = y;
                 });
 
+            inventory.latestPackageXY = { x: x, y: y };
+
             addComponent(
                 entityId,
                 new PackageComponent({

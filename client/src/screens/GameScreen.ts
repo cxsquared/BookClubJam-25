@@ -40,6 +40,7 @@ import { SpacetimeDBEventSystem } from '../game/systems/spacetime-db-event.syste
 import { SystemTags } from '../game/systems/systems-tags';
 import { TweenSystem } from '../game/systems/tween.system';
 import { GameEventMap } from '../game/events';
+import { preLoadText } from '../Globals';
 
 //"wss://space.codyclaborn.me"
 const spacedbUri = 'ws://localhost:3000';
@@ -143,7 +144,7 @@ export class GameScreen extends Container implements AppScreen {
             if (inventoryItem) {
                 conn.reducers.createDecor(inventoryItem.id, x, y);
             }
-        });
+        }, this.tweens);
         this.addChild(inventoryUi);
 
         const inventoryComp = new InventoryComponent({
@@ -248,13 +249,6 @@ export class GameScreen extends Container implements AppScreen {
             textBox.visible = false;
             addComponent(
                 createEntity(),
-                new Position({
-                    x: 0,
-                    y: designConfig.content.height - textBox.box_height - 25,
-                    xOffset: 0,
-                    yOffset: 0,
-                    skew: 0,
-                }),
                 new SpriteComponent({
                     sprite: textBox,
                 }),
@@ -283,9 +277,6 @@ export class GameScreen extends Container implements AppScreen {
                 new RenderSystem(),
             );
         });
-
-        // Kill tweens of the screen container
-        this.tweens.removeAll();
 
         // Reset screen data
         this.alpha = 0;

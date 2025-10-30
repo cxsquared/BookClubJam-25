@@ -1,3 +1,5 @@
+import { TextBox } from './ui/text-box.ui';
+
 export const DECOR_KEYS = [
     'heart_01',
     'eye_01',
@@ -20,6 +22,26 @@ export function randomDecorKey(): string {
 
 export function isTextDecor(decorKey: string) {
     return decorKey.startsWith('board');
+}
+
+export function preLoadText(currentDoorNumber: number) {
+    if (currentDoorNumber <= 1) return;
+
+    let firstLine = true;
+
+    for (let i = 1; i < currentDoorNumber; i++) {
+        const texts = getDialogue(i);
+        if (texts.length > 0) {
+            for (const t of texts) {
+                if (firstLine) {
+                    TextBox.preloadText = t;
+                    firstLine = false;
+                } else {
+                    TextBox.preloadText = TextBox.preloadText + '\n' + t;
+                }
+            }
+        }
+    }
 }
 
 export function getDialogue(doorNumber: number): string[] {

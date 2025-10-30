@@ -3,6 +3,7 @@ import '@pixi/layout';
 import { LayoutContainer, LayoutSprite, ScrollSpring } from '@pixi/layout/components';
 import { designConfig } from '../game/designConfig';
 import { InventoryComponent } from '../game/components/inventory.component';
+import { Group, Tween } from '@tweenjs/tween.js';
 
 const smallDecor = [
     'heart_01',
@@ -25,17 +26,58 @@ const largeDecor = ['board_01', 'board_02', 'rainbow_01', 'shroom_01', 'board_03
 const gridCellWidth = 100;
 const gridCellHeight = 70;
 
+const hideX = -200;
+const showX = 0;
+
 export class InventoryUi extends Container {
     private decorToGrid: Map<string, { isSmall: boolean; x?: number; y: number }>;
     readonly decorGrid: Sprite[][];
     readonly onClick: (key: string, x: number, y: number) => void;
+    private slideTween: Tween;
+    private showing = false;
 
-    constructor(onClick: (key: string, x: number, y: number) => void) {
+    constructor(onClick: (key: string, x: number, y: number) => void, tweenGroup: Group) {
         super({
             layout: true,
         });
 
         this.onClick = onClick;
+
+        this.slideTween = new Tween({ x: hideX }, tweenGroup);
+        this.slideTween.onUpdate(({ x }) => {
+            this.x = x;
+        });
+        this.x = hideX;
+
+        this.interactive = true;
+        this.interactiveChildren = true;
+        this.on('pointerover', (e) => {
+            if (this.x === showX) {
+                this.slideTween.stop();
+                return;
+            }
+
+            if (this.showing && this.slideTween.isPlaying()) {
+                return;
+            }
+
+            this.showing = true;
+            this.slideTween.stop().to({ x: showX }, 200).startFromCurrentValues();
+        });
+
+        this.on('pointerout', (e) => {
+            if (this.x === hideX) {
+                this.slideTween.stop();
+                return;
+            }
+
+            if (!this.showing && this.slideTween.isPlaying()) {
+                return;
+            }
+
+            this.showing = false;
+            this.slideTween.stop().to({ x: hideX }, 200).startFromCurrentValues();
+        });
 
         const bg = Sprite.from('decor_bg');
         bg.y = 20;
@@ -153,6 +195,8 @@ export class InventoryUi extends Container {
         }
     }
 
+    public hide() {}
+
     public getItemPosition(key: string): { x: number; y: number } {
         const gridInfo = this.decorToGrid.get(key);
 
@@ -166,7 +210,10 @@ export class InventoryUi extends Container {
 
         if (!sprite) return defaultReturn;
 
-        return { x: sprite.layout?.realX ?? defaultReturn.x, y: sprite.layout?.realY ?? defaultReturn.y };
+        return {
+            x: (sprite.layout?.realX ?? defaultReturn.x) + this.x,
+            y: sprite.layout?.realY ?? defaultReturn.y,
+        };
     }
 
     public update(inventory: InventoryComponent) {
