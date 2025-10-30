@@ -11,6 +11,8 @@ import { designConfig } from '../designConfig';
 import { AppScreen } from '../../navigation';
 import { InventoryComponent } from '../components/inventory.component';
 import { AsepriteAsset } from '../../utils/asesprite.loader';
+import { Tween } from '@tweenjs/tween.js';
+import { TweenComponent } from '../components/tween.component';
 
 const packageQuery = query({
     package: PackageComponent,
@@ -73,30 +75,41 @@ export class PackageEventSystem extends System<SystemTags, GameEventMap>()<{
             sprite.label = `package:${data.package.id}`;
             sprite.interactive = true;
 
+            const startY = -32;
+
             const x =
                 designConfig.content.width / 2 + Math.random() * (designConfig.content.width / 2) - sprite.width - 5;
             const y = designConfig.content.height - sprite.height + 5;
 
             sprite.x = x;
-            sprite.y = y;
+            sprite.y = startY;
 
             sprite.zIndex = 50;
             screen.addChild(sprite);
 
+            const position = new Position({
+                x: x,
+                y: startY,
+                xOffset: 0,
+                yOffset: 0,
+                skew: 0,
+            });
+
             const listener = new MouseListener(sprite, entityId);
+
+            const tween = new Tween({ y: startY })
+                .to({ y: y }, 300)
+                .start()
+                .onUpdate(({ y }) => {
+                    position.y = y;
+                });
 
             addComponent(
                 entityId,
                 new PackageComponent({
                     package: data.package,
                 }),
-                new Position({
-                    x: x,
-                    y: y,
-                    xOffset: 0,
-                    yOffset: 0,
-                    skew: 0,
-                }),
+                position,
                 new SpriteComponent({
                     sprite: sprite,
                 }),
@@ -111,6 +124,11 @@ export class PackageEventSystem extends System<SystemTags, GameEventMap>()<{
                             conn.reducers.openPackage(packageItem.package.package.id);
                         }
                     },
+                }),
+                new TweenComponent({
+                    tween: tween,
+                    onComplete: undefined,
+                    running: true,
                 }),
             );
         });

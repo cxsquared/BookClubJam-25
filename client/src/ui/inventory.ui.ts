@@ -4,9 +4,23 @@ import { LayoutContainer, LayoutSprite, ScrollSpring } from '@pixi/layout/compon
 import { designConfig } from '../game/designConfig';
 import { InventoryComponent } from '../game/components/inventory.component';
 
-const smallDecor = ['heart_01', 'eye_01', 'cac_01', 'star_01', 'paw_01', 'cat_01', 'face_01', 'leaf_01'];
+const smallDecor = [
+    'heart_01',
+    'eye_01',
+    'cac_01',
+    'star_01',
+    'paw_01',
+    'cat_01',
+    'face_01',
+    'leaf_01',
+    'star_02',
+    'char_01',
+    'weird_01',
+    'lights_01',
+    'cac_02',
+];
 
-const largeDecor = ['board_01', 'board_02', 'rainbow_01', 'shroom_01'];
+const largeDecor = ['board_01', 'board_02', 'rainbow_01', 'shroom_01', 'board_03'];
 
 const gridCellWidth = 100;
 const gridCellHeight = 70;

@@ -30,8 +30,8 @@ import {
 export type Interaction = {
   id: bigint,
   actor: __Identity,
-  decorId: bigint,
-  interaction: string,
+  targetUser: __Identity,
+  interactionType: string,
 };
 /**
  * An object for generated helper functions.
@@ -46,8 +46,8 @@ export const Interaction = {
       elements: [
         { name: "id", algebraicType: __AlgebraicTypeValue.U64},
         { name: "actor", algebraicType: __AlgebraicTypeValue.createIdentityType()},
-        { name: "decorId", algebraicType: __AlgebraicTypeValue.U64},
-        { name: "interaction", algebraicType: __AlgebraicTypeValue.String},
+        { name: "targetUser", algebraicType: __AlgebraicTypeValue.createIdentityType()},
+        { name: "interactionType", algebraicType: __AlgebraicTypeValue.String},
       ]
     });
   },

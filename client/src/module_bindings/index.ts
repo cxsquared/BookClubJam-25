@@ -38,8 +38,8 @@ import { EnterDoor } from "./enter_door_reducer.ts";
 export { EnterDoor };
 import { IdentityConnected } from "./identity_connected_reducer.ts";
 export { IdentityConnected };
-import { LikeDecor } from "./like_decor_reducer.ts";
-export { LikeDecor };
+import { LikeDoor } from "./like_door_reducer.ts";
+export { LikeDoor };
 import { MoveDecor } from "./move_decor_reducer.ts";
 export { MoveDecor };
 import { OpenPackage } from "./open_package_reducer.ts";
@@ -170,9 +170,9 @@ const REMOTE_MODULE = {
       reducerName: "identity_connected",
       argsType: IdentityConnected.getTypeScriptAlgebraicType(),
     },
-    like_decor: {
-      reducerName: "like_decor",
-      argsType: LikeDecor.getTypeScriptAlgebraicType(),
+    like_door: {
+      reducerName: "like_door",
+      argsType: LikeDoor.getTypeScriptAlgebraicType(),
     },
     move_decor: {
       reducerName: "move_decor",
@@ -220,7 +220,7 @@ export type Reducer = never
 | { name: "DeleteDecor", args: DeleteDecor }
 | { name: "EnterDoor", args: EnterDoor }
 | { name: "IdentityConnected", args: IdentityConnected }
-| { name: "LikeDecor", args: LikeDecor }
+| { name: "LikeDoor", args: LikeDoor }
 | { name: "MoveDecor", args: MoveDecor }
 | { name: "OpenPackage", args: OpenPackage }
 | { name: "UpdateDecorText", args: UpdateDecorText }
@@ -281,20 +281,20 @@ export class RemoteReducers {
     this.connection.offReducer("identity_connected", callback);
   }
 
-  likeDecor(decorId: bigint) {
-    const __args = { decorId };
+  likeDoor(doorId: bigint) {
+    const __args = { doorId };
     let __writer = new __BinaryWriter(1024);
-    LikeDecor.serialize(__writer, __args);
+    LikeDoor.serialize(__writer, __args);
     let __argsBuffer = __writer.getBuffer();
-    this.connection.callReducer("like_decor", __argsBuffer, this.setCallReducerFlags.likeDecorFlags);
+    this.connection.callReducer("like_door", __argsBuffer, this.setCallReducerFlags.likeDoorFlags);
   }
 
-  onLikeDecor(callback: (ctx: ReducerEventContext, decorId: bigint) => void) {
-    this.connection.onReducer("like_decor", callback);
+  onLikeDoor(callback: (ctx: ReducerEventContext, doorId: bigint) => void) {
+    this.connection.onReducer("like_door", callback);
   }
 
-  removeOnLikeDecor(callback: (ctx: ReducerEventContext, decorId: bigint) => void) {
-    this.connection.offReducer("like_decor", callback);
+  removeOnLikeDoor(callback: (ctx: ReducerEventContext, doorId: bigint) => void) {
+    this.connection.offReducer("like_door", callback);
   }
 
   moveDecor(decorId: bigint, x: number, y: number, rot: number) {
@@ -363,9 +363,9 @@ export class SetReducerFlags {
     this.enterDoorFlags = flags;
   }
 
-  likeDecorFlags: __CallReducerFlags = 'FullUpdate';
-  likeDecor(flags: __CallReducerFlags) {
-    this.likeDecorFlags = flags;
+  likeDoorFlags: __CallReducerFlags = 'FullUpdate';
+  likeDoor(flags: __CallReducerFlags) {
+    this.likeDoorFlags = flags;
   }
 
   moveDecorFlags: __CallReducerFlags = 'FullUpdate';

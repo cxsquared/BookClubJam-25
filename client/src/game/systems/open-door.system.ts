@@ -93,6 +93,7 @@ export class OpenDoorSystem extends System<SystemTags, GameEventMap>()<{
                 door.position.skew = 0;
                 door.position.yOffset = 0;
                 door.position.xOffset = 0;
+                globalThis.currentDoorNumber++;
                 conn.reducers.enterDoor();
 
                 emit({

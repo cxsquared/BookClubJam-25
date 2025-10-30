@@ -27,13 +27,13 @@ import {
   type SubscriptionEventContextInterface as __SubscriptionEventContextInterface,
 } from "spacetimedb";
 
-export type LikeDecor = {
-  decorId: bigint,
+export type LikeDoor = {
+  doorId: bigint,
 };
 /**
  * An object for generated helper functions.
  */
-export const LikeDecor = {
+export const LikeDoor = {
   /**
   * A function which returns this type represented as an AlgebraicType.
   * This function is derived from the AlgebraicType used to generate this type.
@@ -41,20 +41,20 @@ export const LikeDecor = {
   getTypeScriptAlgebraicType(): __AlgebraicTypeType {
     return __AlgebraicTypeValue.Product({
       elements: [
-        { name: "decorId", algebraicType: __AlgebraicTypeValue.U64},
+        { name: "doorId", algebraicType: __AlgebraicTypeValue.U64},
       ]
     });
   },
 
-  serialize(writer: __BinaryWriter, value: LikeDecor): void {
-    __AlgebraicTypeValue.serializeValue(writer, LikeDecor.getTypeScriptAlgebraicType(), value);
+  serialize(writer: __BinaryWriter, value: LikeDoor): void {
+    __AlgebraicTypeValue.serializeValue(writer, LikeDoor.getTypeScriptAlgebraicType(), value);
   },
 
-  deserialize(reader: __BinaryReader): LikeDecor {
-    return __AlgebraicTypeValue.deserializeValue(reader, LikeDecor.getTypeScriptAlgebraicType());
+  deserialize(reader: __BinaryReader): LikeDoor {
+    return __AlgebraicTypeValue.deserializeValue(reader, LikeDoor.getTypeScriptAlgebraicType());
   },
 
 }
 
-export default LikeDecor;
+export default LikeDoor;
 
